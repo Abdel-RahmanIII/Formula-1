@@ -48,6 +48,8 @@ These are the pieces that break the project if members handle them inconsistentl
 ## 3. Technical Plan, Step by Step
 
 ### Step 1: Setup and Audit (M1, Days 1–2)
+> 📘 **Detailed Guide:** See [`docs/cleaning_notes.md`](cleaning_notes.md) for full 14-table structural reference, contract constraints, and critical gotchas/traps.
+
 * Load all 14 CSVs with `na_values=[r'\N']`. Keep raw dataframes untouched; clean copies only.
 * Run a **"before" EDA**:
   * Row counts per table.
