@@ -168,6 +168,55 @@ The last cell (8.6) lists the final column types and runs the closing checks: nu
 
 ---
 
+## Section 4: Step 3, the data-engineering questions
+
+Three questions answered from `clean_df` joined to other tables. Each one ends with a markdown cell holding the answer, the joins, and notes on grain, missing values and the pre-race cutoff. These are descriptive analyses: `podium` and `status` are the outcomes being measured and stay blacklisted as model features.
+
+The first cell imports `scipy` and `statsmodels` and defines `rate_table()`, which returns, per group, the number of rows, the number of events, the rate and its Wilson 95% interval.
+
+### Task 9: Q1, front-row conversion by circuit
+
+| Cell | What it does |
+| :--- | :--- |
+| 9.1 | Joins `clean_df` (2003 onward) to `qualifying_clean` and flags a front-row start two ways: `grid` 1–2 and `quali_position` 1–2. Counts how often the two disagree. |
+| 9.2 | Podium rate per circuit and era under each definition, keeps circuits with at least 10 front-row starts in both eras, and compares the two eras' rankings with Spearman's ρ. |
+| 9.3 | Dumbbell chart, `de_q1_front_row_conversion`. |
+
+**Answer.** Front-row starts reach the podium more often in 2014–2024 (76.2%) than in 2003–2013 (68.3%). Monaco, Suzuka and Yas Marina convert most often in the hybrid era. The ranking is only loosely preserved (ρ = 0.36 on grid, 0.54 on qualifying). Grid penalties moved 2.3% of top-two qualifiers off the front row before 2014 and 6.0% after.
+
+**How to read the chart.** One row per circuit; the grey dot is 2003–2013 and the red dot is 2014–2024. A long bar to the right means the circuit converts much more often in the hybrid era. Each dot rests on 10 to 24 starts, so small gaps are noise.
+
+Why 2003 (DEC-011): the qualifying file is missing whole races before then, so earlier seasons cannot support the qualifying-based definition.
+
+### Task 10: Q2, home advantage
+
+| Cell | What it does |
+| :--- | :--- |
+| 10.1 | Maps `drivers.nationality` to home countries and sets `is_home` when the circuit is in one of them (DEC-012). |
+| 10.2 | Home and away podium rates inside each grid bucket (1, 2–3, 4–6, 7–10, 11+). |
+| 10.3 | Cochran–Mantel–Haenszel test and logistic regression `podium ~ is_home + C(grid_bucket)`, plus three robustness checks. |
+| 10.4 | Grouped bar chart, `de_q2_home_advantage`. |
+
+**Answer.** No detectable home advantage once grid position is held fixed: pooled odds ratio 0.95 (95% CI 0.80 to 1.13, p = 0.61). The raw home rate is lower (11.92% vs. 13.82%) only because home drivers start further back on average.
+
+**How to read the chart.** Each pair of bars compares drivers who started from similar positions. The black lines are 95% intervals; in every bucket the home and away intervals overlap.
+
+### Task 11: Q3, mechanical retirements
+
+| Cell | What it does |
+| :--- | :--- |
+| 11.1 | Maps all 139 statuses to finished, mechanical, accident/driver or regulatory/other (DEC-013), and asserts none is left unmapped. |
+| 11.2 | Mechanical retirements per race start, per constructor and era, for constructors with at least 40 starts in the era. |
+| 11.3 | Ranked bar chart per era, `de_q3_mechanical_retirements`. |
+| 11.4 | Merges renamed teams (DEC-014) and draws a slope chart of the same teams across both eras, `de_q3_mechanical_retirements_lineage`. |
+| 11.5 | Sensitivity run: counts the generic `Retired` label as mechanical and checks whether the ranking moves. |
+
+**Answer.** 2014–2021: Lotus F1 (18.7%), Toro Rosso (16.1%), Renault (14.1%). 2022–2024: Alfa Romeo (12.5%), Alpine (10.4%), AlphaTauri (8.0%). The field-wide rate fell from 9.43% to 5.92% of starts.
+
+**How to read the charts.** In the bar chart the label gives the rate and the counts behind it (retirements / starts); the grey line is the 95% interval, which is wide for teams with few starts. In the slope chart a line going down means the team became more reliable.
+
+---
+
 ## Is Member 1's work done?
 
 **The technical steps are done; the role is not.** Steps 1 and 2 of the plan (Tasks 1–8: audit, cleaning, before/after plots) are complete, and `clean_df` passes the data contract. What M1 still owes, according to [milestone_1_plan.md](milestone_1_plan.md):
@@ -193,9 +242,10 @@ The last cell (8.6) lists the final column types and runs the closing checks: nu
 
 **Rest of the team, now unblocked by `clean_df`** (deadline 18 October, 11:59 PM)
 
+Step 3 (the data-engineering questions) is done; see Section 4 above.
+
 | Step | Owner | What |
 | :--- | :--- | :--- |
-| 3 | M2 | The three data-engineering questions: front-row conversion by circuit, home advantage, mechanical retirements by constructor. |
 | 4 | M3 | Leakage-safe features from `FEATURE_GROUPS`: grid, qualifying, driver and constructor form, lagged standings, context. |
 | 5 | M3 | Time-based split, preprocessing pipeline, the two preprocessing-order experiments. |
 | 6 | M4 | Baselines (`grid ≤ 3` rule, logistic regression), random forest, gradient boosting, shallow neural network, tuning. |
