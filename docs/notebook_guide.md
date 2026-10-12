@@ -217,6 +217,54 @@ Why 2003 (DEC-011): the qualifying file is missing whole races before then, so e
 
 ---
 
+## Section 5: Step 4, feature engineering
+
+This section turns `clean_df` into `model_df`, the table the models are trained on: 24,575 rows, the 5 identifiers, `podium` and 21 features in 6 groups. Missing values are left as `NaN` on purpose; filling them is Step 5.
+
+### Task 12: Feature construction
+
+| Cell | What it does |
+| :--- | :--- |
+| 12.1 | Builds `feature_base` from `clean_df`, sorted by date, and checks that no driver has two rows on one date (which is what makes "shift by one row" mean "strictly earlier"). |
+| 12.2 | Grid: `front_row`, and `teammate_grid_diff` (the driver's slot minus the average slot of the team's other cars). |
+| 12.3 | Qualifying: `quali_position`, `gap_to_pole`, `q3_reached`, `missing_quali_flag` (DEC-017). |
+| 12.4 | Driver form, constructor form, and the driver's record at the circuit. Every one uses `shift(1)` before the rolling or expanding window. |
+| 12.5 | Standings entering the race, taken from the standings table at the previous round. |
+| 12.6 | Context: `field_size` and `is_home_race` (the Q2 mapping). |
+| 12.7 | Shows that the training seasons contain no sprint and removes the sprint group (DEC-016). |
+| 12.8 | `build_feature_table()` chains the functions above and produces `model_df`; the data contract and the leakage guard are run on it. |
+| 12.9 | `FEATURE_REGISTRY`: for each feature, its group, source tables, definition and why it is known before the race. This table goes into the report. |
+
+Two ideas to be able to explain:
+
+- **`shift(1)`.** A rolling average over a driver's rows would include the current race. Shifting by one row first means the window for race *t* ends at race *t − 1*.
+- **Points as shares (DEC-015).** A win gave 9 or 10 points for most of the training seasons and 25 from 2010. Dividing by the points awarded (or by the leader's points) keeps the feature on one scale across eras.
+
+### Task 13: Leakage tests
+
+| Cell | What it does |
+| :--- | :--- |
+| 13.1 | Recomputes six history features for 300 random rows the slow way, using only rows with an earlier date, and asserts they match `model_df`. |
+| 13.2 | For 20 random races, scrambles every outcome from that race onward, rebuilds the table, and asserts that the race's 21 features did not change. A control feature built without `shift(1)` is flagged in 20 of 20 races, which shows the test can detect leakage. |
+
+### Task 14: Feature validation
+
+All views that relate a feature to the target use the training seasons only.
+
+| Figure | What it shows | How to read it |
+| :--- | :--- | :--- |
+| `feat_missingness_by_decade` | Share of missing values per feature and decade. | Qualifying features are empty before the 1990s and complete from the 2010s. The standings ranks are missing at round 1. The circuit rate is missing on a driver's first visit. |
+| `feat_podium_rate_by_grid` | Podium rate for each grid position, with 95% intervals. | Falls steeply: 63% from pole, 35% from fourth, 6% from tenth, under 1% from twentieth. The dashed line is the training base rate. |
+| `feat_correlation_matrix` | Spearman correlation between all features and the target. | Dark cells off the diagonal mark features that carry the same information, such as `quali_position` and `grid` (0.98). The bottom row is each feature's correlation with `podium`. |
+| `feat_distributions_by_class` | Box plots of each continuous feature for podium and non-podium rows. | The further apart the two boxes, the more the feature separates the classes. `round` and `field_size` barely differ. |
+| `feat_univariate_auc` | ROC-AUC of each feature used alone, coloured by group. | 0.5 is no signal. Qualifying and grid are near 0.9; form and standings near 0.8; `pit_start`, `is_home_race`, `round` and `missing_quali_flag` are at 0.5. |
+
+Cell 14.6 compares rolling windows of 3, 5 and 10 races (DEC-018).
+
+No feature is dropped at this stage. The weak ones are kept so the ablation in Step 7 can measure them properly.
+
+---
+
 ## Is Member 1's work done?
 
 **The technical steps are done; the role is not.** Steps 1 and 2 of the plan (Tasks 1–8: audit, cleaning, before/after plots) are complete, and `clean_df` passes the data contract. What M1 still owes, according to [milestone_1_plan.md](milestone_1_plan.md):
@@ -242,11 +290,10 @@ Why 2003 (DEC-011): the qualifying file is missing whole races before then, so e
 
 **Rest of the team, now unblocked by `clean_df`** (deadline 18 October, 11:59 PM)
 
-Step 3 (the data-engineering questions) is done; see Section 4 above.
+Steps 3 and 4 (the data-engineering questions and feature engineering) are done; see Sections 4 and 5 above.
 
 | Step | Owner | What |
 | :--- | :--- | :--- |
-| 4 | M3 | Leakage-safe features from `FEATURE_GROUPS`: grid, qualifying, driver and constructor form, lagged standings, context. |
 | 5 | M3 | Time-based split, preprocessing pipeline, the two preprocessing-order experiments. |
 | 6 | M4 | Baselines (`grid ≤ 3` rule, logistic regression), random forest, gradient boosting, shallow neural network, tuning. |
 | 7 | M3 | Ablation by feature group. |
