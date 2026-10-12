@@ -5,7 +5,7 @@
 
 ## Summary
 
-The data stages are finished: the audit and all of cleaning (Steps 1 and 2) are done, and the cleaned base table `clean_df` now exists. The three data-engineering questions (Step 3) are also answered in notebook section 4. Feature engineering (Step 4) is done in notebook section 5 and produces `model_df`. Nothing from modeling, ablation, XAI, inference or the report has been started, and the project is about three days behind the original timeline.
+The data stages are finished: the audit and all of cleaning (Steps 1 and 2) are done, and the cleaned base table `clean_df` now exists. The three data-engineering questions (Step 3) are also answered in notebook section 4. Feature engineering (Step 4) is done in notebook section 5 and produces `model_df`. The split, the preprocessing pipeline and its experiments (Step 5) are done in notebook section 6. Nothing from modeling, ablation, XAI, inference or the report has been started, and the project is about three days behind the original timeline.
 
 M2, M3 and M4 are no longer blocked. The cleaning cells are in the working copy of the notebook but are **not committed or pushed yet**, and decisions DEC-009 and DEC-010 still need team approval.
 
@@ -26,7 +26,7 @@ All work is in [formula-1.ipynb](../formula-1.ipynb) (52 cells). The last commit
 | 2. Cleaning, Task 8: "after" EDA | M1 | Done, uncommitted | Five `after_eda_*` figures |
 | 3. Data-engineering questions Q1–Q3 | M2 | Done, uncommitted | Notebook section 4, four `de_q*` figures, DEC-011 to DEC-014 (DEC-012 proposed) |
 | 4. Feature engineering | M3 | Done, uncommitted | Notebook section 5: `model_df` with 21 features, two leakage tests, five `feat_*` figures, DEC-015 to DEC-018 proposed |
-| 5. Split and preprocessing experiments | M3 | Not started | |
+| 5. Split and preprocessing experiments | M3 | Done, uncommitted | Notebook section 6: pipeline, window experiment, two order experiments, three `prep_*` figures, DEC-019 to DEC-021 proposed |
 | 6. Modeling (baselines, two ML models, shallow NN) | M4 | Not started | |
 | 7. Ablation | M3 | Not started | |
 | 8. XAI | M2 | Not started | |

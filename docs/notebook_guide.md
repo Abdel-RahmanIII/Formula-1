@@ -265,6 +265,66 @@ No feature is dropped at this stage. The weak ones are kept so the ablation in S
 
 ---
 
+## Section 6: Step 5, split and preprocessing
+
+This section splits `model_df` by season, builds the preprocessing pipeline and runs the experiments that decide how it is used. Every comparison is scored on the validation seasons (2020–2021). The test seasons are transformed at the end but never scored here.
+
+### Task 15: Temporal split
+
+| Cell | What it does |
+| :--- | :--- |
+| 15.1 | `split_by_season()` returns train (up to 2019), validation (2020–2021) and test (2022 on), and asserts that the three do not overlap in time. |
+| 15.2 | Shows how many validation and test rows belong to a driver or constructor never seen in training. This is why the identifiers are not one-hot encoded (DEC-020). |
+
+### Task 16: Pipeline and scoring helpers
+
+| Cell | What it does |
+| :--- | :--- |
+| 16.1 | `make_preprocessor()` builds the pipeline: grid fallback for a missing qualifying position, median imputation and standard scaling for the 16 continuous features, and a constant 0 for missing flags. `make_reference_model()` is the logistic regression used to score the experiments. |
+| 16.2 | `validation_probabilities()` fits a preprocessor and model and predicts the validation seasons. `compare_on_validation()` reports ROC-AUC and PR-AUC per variant and the PR-AUC difference to a reference, with a 95% interval from resampling whole races 500 times. |
+
+Terms to be able to explain:
+
+- **Imputation** fills a missing value. Here the fill is the median of the training rows.
+- **Standard scaling** subtracts the training mean and divides by the training standard deviation, so every continuous feature is on the same scale.
+- **Fitting on train only** means the medians, means and standard deviations are computed from the training seasons and then applied unchanged to validation and test.
+- **The bootstrap interval** says how much a difference could move if the validation races had been a slightly different set. If it includes 0, the difference is not distinguishable from noise.
+
+### Task 17: Training-window experiment (DEC-019)
+
+Trains on all seasons, from 1994, from 2003 and from 2006, with two ways of filling missing qualifying values, plus a gradient-boosting check.
+
+| Training window | Train rows | Logistic, grid fallback (val PR-AUC) | Gradient boosting (val PR-AUC) |
+| :--- | ---: | ---: | ---: |
+| All seasons | 22,448 | 0.728 | 0.704 |
+| From 1994 | 10,091 | 0.720 | 0.704 |
+| From 2003 | 6,782 | 0.725 | 0.693 |
+| From 2006 | 5,743 | 0.729 | 0.665 |
+
+**Decision.** Train on all seasons and fill a missing qualifying position from the grid slot. The window makes no real difference to the logistic regression, and less data hurts the gradient-boosting model. Figure: `prep_training_window` (note its y-axis is zoomed in; the logistic lines differ by less than 0.01).
+
+### Task 18: Distributions before and after each transformation
+
+| Figure | What it shows | How to read it |
+| :--- | :--- | :--- |
+| `prep_distributions_by_stage` | Four features, each raw, after imputation and after scaling; grey is train, orange is validation, teal is test. | Scaling changes the axis but not the shape. Imputation adds a spike at the training median, tall for `gap_to_pole`. Validation and test have no tail beyond 20 cars. |
+| `prep_distribution_shift` | The mean of each scaled feature in validation and test. 0 is the training mean. | `field_size` is almost one standard deviation lower than in training (20-car grids), and `round` is higher (longer seasons). |
+
+### Task 19: Preprocessing-order experiments (DEC-021)
+
+| Experiment | Variants | Validation PR-AUC difference |
+| :--- | :--- | :--- |
+| 1 | Preprocessor fitted on train only vs. on all rows | 0.0000 (95% interval −0.0005 to +0.0003) |
+| 2 | Impute → scale vs. scale → impute | −0.0001 (95% interval −0.0006 to +0.0001) |
+
+Neither changes the score here, and each cell shows why. In experiment 1 the validation and test seasons are only 8.7% of the rows, so the learned statistics barely move. In experiment 2 the scaler does learn a different standard deviation (1.57 vs. 2.57 for `gap_to_pole`), but a logistic regression adjusts its coefficient to compensate. Train-only fitting and impute → scale are kept because they are correct by construction, not because they score higher.
+
+### Task 20: Final matrices
+
+Fits the final preprocessor on the training rows and produces `X_train_prep`, `X_val_prep` and `X_test_prep` (no missing values), alongside the raw `X_train`, `X_val`, `X_test` and the targets `y_train`, `y_val`, `y_test`.
+
+---
+
 ## Is Member 1's work done?
 
 **The technical steps are done; the role is not.** Steps 1 and 2 of the plan (Tasks 1–8: audit, cleaning, before/after plots) are complete, and `clean_df` passes the data contract. What M1 still owes, according to [milestone_1_plan.md](milestone_1_plan.md):
@@ -290,11 +350,10 @@ No feature is dropped at this stage. The weak ones are kept so the ablation in S
 
 **Rest of the team, now unblocked by `clean_df`** (deadline 18 October, 11:59 PM)
 
-Steps 3 and 4 (the data-engineering questions and feature engineering) are done; see Sections 4 and 5 above.
+Steps 3 to 5 (the data-engineering questions, feature engineering, and the split and preprocessing) are done; see Sections 4 to 6 above.
 
 | Step | Owner | What |
 | :--- | :--- | :--- |
-| 5 | M3 | Time-based split, preprocessing pipeline, the two preprocessing-order experiments. |
 | 6 | M4 | Baselines (`grid ≤ 3` rule, logistic regression), random forest, gradient boosting, shallow neural network, tuning. |
 | 7 | M3 | Ablation by feature group. |
 | 8 | M2 | Explainability (permutation importance, SHAP, LIME). |
