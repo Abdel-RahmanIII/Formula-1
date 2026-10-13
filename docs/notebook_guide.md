@@ -2,7 +2,7 @@
 
 This guide walks through [formula-1.ipynb](../formula-1.ipynb) in order: what each code cell does, why it is there, and how to read each figure. All numbers come from a full run of the notebook on the local `archive/` data (pandas 2.3.3).
 
-**The project in one paragraph.** We predict whether a driver finishes on the podium (top three) in a Formula 1 race. The prediction is made after qualifying and before the race starts, so nothing that happens during or after the race may be used as an input. The notebook loads the 14 raw tables, checks and cleans them (`clean_df`), answers three data-engineering questions, builds 21 pre-race features (`model_df`), trains and compares five models, and then measures and explains what the selected model relies on.
+**The project in one paragraph.** We predict whether a driver finishes on the podium (top three) in a Formula 1 race. The prediction is made after qualifying and before the race starts, so nothing that happens during or after the race may be used as an input. The notebook loads the 14 raw tables, checks and cleans them (`clean_df`), answers three data-engineering questions, builds 21 pre-race features (`model_df`), trains and compares five models, measures and explains what the selected model relies on, and wraps it in an inference function.
 
 ---
 
@@ -46,7 +46,7 @@ The contract is the agreed shape of the modeling table (DEC-005).
 
 ### 1.5 Decision log (markdown)
 
-A copy of decisions DEC-001 to DEC-007 and a short list of which tables are safe. The full log, DEC-001 to DEC-032, is in [decision_log.md](decision_log.md).
+A copy of decisions DEC-001 to DEC-007 and a short list of which tables are safe. The full log, DEC-001 to DEC-033, is in [decision_log.md](decision_log.md).
 
 ### 1.6 Raw data loader
 
@@ -519,13 +519,75 @@ LIME creates 5,000 artificial rows around the row of interest, scores them with 
 
 ---
 
+## Section 10: Step 9, the inference function
+
+`predict_podium(raceId, driverId, grid, quali_info=None)` predicts, before the race, whether a driver finishes on the podium. It uses the Step 6 LightGBM and threshold unchanged (DEC-033).
+
+### Task 36: From score to probability
+
+| Cell | What it does |
+| :--- | :--- |
+| 36.1 | Fits `calibrator`, a one-input logistic regression from the model's log-odds to the outcome, on the validation seasons. `score_to_probability()` applies it. `calibration_check` compares score and probability on validation and test. |
+| 36.2 | Figure `inference_calibration`. |
+
+Terms to be able to explain:
+
+- **Calibration.** A probability is calibrated if, among all drivers given 30%, about 30% reach the podium. The raw score is not: it averages 0.32 where 15% are podiums, because of the class weights (Task 26).
+- **Platt scaling** is the name of this correction. It has two parameters and never changes the order of the drivers, so PR-AUC and every yes/no prediction stay the same.
+- **Brier score** is the mean squared error of a probability. Lower is better.
+
+| | Podium rate | Mean score | Mean probability | Brier, raw | Brier, calibrated |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| Validation (fitted here) | 0.151 | 0.32 | 0.151 | 0.111 | 0.067 |
+| Test (check only) | 0.151 | 0.33 | 0.161 | 0.116 | 0.068 |
+
+Figure `inference_calibration`: the test rows in eight equal groups by predicted value; the x-axis is the average prediction in the group and the y-axis the share of podiums. Points on the diagonal are perfectly calibrated. The red line (calibrated) follows it; the grey line (raw score) is far to the right, meaning the score overstates the chance.
+
+The decision threshold of 0.739 on the score is a probability of 0.397.
+
+### Task 37: Pre-race feature builder
+
+| Cell | What it does |
+| :--- | :--- |
+| 37.1 | `pre_race_features()` builds the 21 features of one driver in one race. `recorded_quali()` returns the dataset's qualifying record in the form the function takes. |
+| 37.2 | Rebuilds 36 validation and test rows and asserts that features and scores are identical to `model_df`. |
+
+How `pre_race_features()` avoids leakage: it passes `build_feature_table()` (Step 4) only the races *before* the requested one, plus the entry list of the requested race with finishing position, points and podium flag set to missing. The other entries are needed for `field_size`, the teammate's grid slot and the pole time.
+
+Special cases: `grid = 0` is a pit-lane start (DEC-010); a driver not in the entry list is added in the team of their most recent race; `quali_info=None` leaves the qualifying features missing.
+
+### Task 38: `predict_podium()`
+
+| Cell | What it shows |
+| :--- | :--- |
+| 38.1 | The function. It returns a dict with `prediction`, `probability`, `score`, `threshold`, `features` and labels; with `explain=True` also the five largest SHAP contributions. |
+| 38.2 | A complete record: Lando Norris, pole at the 2024 Abu Dhabi Grand Prix. Score 0.902, probability 0.764, prediction podium (he won). |
+| 38.3 | The same record with missing qualifying information. |
+| 38.4 | Other grid slots, a pit-lane start, and a driver outside the entry list. Figure `inference_grid_what_if`. |
+| 38.5 | Invalid input raises a `ValueError` with a message. |
+
+| Input | Score | Probability | Prediction |
+| :--- | ---: | ---: | :--- |
+| Complete record | 0.902 | 0.764 | Podium |
+| Position only, no lap times | 0.872 | 0.683 | Podium |
+| No qualifying information | 0.864 | 0.663 | Podium |
+
+Points to be able to explain:
+
+- **How missing values are handled.** Nothing is filled in. LightGBM receives the missing value and each tree sends it down the branch it learned for missing values (DEC-024). Most training seasons have no qualifying data, so the model has seen this in about 14,000 rows.
+- **How much it matters.** Removing qualifying from every 2024 row moves PR-AUC from 0.692 to 0.690; 12 of 476 predictions flip.
+- **The grid what-if is a statement about the model.** Only this driver's slot changes. The probability falls from 0.66 on the front row to 0.10 at slots 15 to 18, then rises to 0.15 at slots 19 and 20. The rise is not supported by the training data and should not be trusted: a front-running car at the back of the grid is rare.
+
+Limits to state: the race must be in the dataset (the function needs its date, circuit and entry list), and history ends with the 2024 season.
+
+---
+
 ## Where the notebook stands
 
-Steps 1 to 8 of the plan (Tasks 1–35) are in the notebook. Steps 9 and 10 are left; the deadline is 18 October, 11:59 PM.
+Steps 1 to 9 of the plan (Tasks 1–38) are in the notebook. Step 10 is left; the deadline is 18 October, 11:59 PM.
 
 | Step | Owner | What is left |
 | :--- | :--- | :--- |
-| 9 | M4 | `predict_podium(raceId, driverId, grid, quali_info=None)`: build the pre-race features for one driver, run the fitted LightGBM, return the score and the yes/no prediction. Show it on a complete record and on one with missing qualifying times. |
 | 10 | All | Notebook section on limitations and future work, a full Run All on Kaggle, the report PDF, and the rehearsal on 17 October. |
 
 **Open items outside the notebook (M1's role in [milestone_1_plan.md](milestone_1_plan.md))**
@@ -538,11 +600,11 @@ Steps 1 to 8 of the plan (Tasks 1–35) are in the notebook. Steps 9 and 10 are 
 | Remove the `d:/GUC/...` fallback in the config cell and the `file:///d:/` links in [Step 1,2 plan.md](Step%201,2%20plan.md) and [cleaning_notes.md](cleaning_notes.md) | Not done |
 | Final report assembly (Step 10) | Not started |
 
-**Things to carry into Steps 9 and 10**
+**Things to carry into Step 10**
 
-- **The model output is a score, not a probability.** With class weights it is about twice the true podium rate (Task 26). Step 9 must report it as a score or recalibrate it on validation.
+- **Score and probability are different numbers.** The raw score is about twice the true podium rate (Task 26); `predict_podium()` also returns a calibrated probability (Task 36). Say which one a number is whenever it is quoted.
 - **The model takes the raw features.** LightGBM needs no imputer or scaler, and a missing qualifying value can be passed as `NaN`. It expects all 21 columns in the order of `FEATURE_COLUMNS`, including the four it never uses.
-- **`grid` is by far the most influential input** (Task 33). A prediction without a grid slot has little to go on.
+- **`grid` is by far the most influential input** (Task 33).
 - **The test seasons have been used.** Any further change to the model or threshold that is judged on test scores would turn them into a second validation set.
 - **Numbers for the report:** the podium rate is 13.67% after cleaning (15.1% in validation and test), the validation set is small (775 rows, 117 podiums, 39 races), and differences below about 0.02 PR-AUC are noise.
-- **Limitations already measured:** thin qualifying coverage before 2003, history features that transfer less well to the 2022–2024 test seasons than the starting position does (Task 31), in-race events that no pre-race feature can contain (Task 34), and the small test set (68 races).
+- **Limitations already measured:** thin qualifying coverage before 2003, history features that transfer less well to the 2022–2024 test seasons than the starting position does (Task 31), in-race events that no pre-race feature can contain (Task 34), the small test set (68 races), and an inference function that only works for races already in the dataset (Task 38).

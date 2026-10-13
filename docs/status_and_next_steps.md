@@ -5,11 +5,11 @@
 
 ## Summary
 
-Steps 1 to 8 of the plan are done: audit, cleaning, the three data-engineering questions, feature engineering, split and preprocessing, modeling, ablation and explainability (Tasks 1–35 in the notebook). Two steps are left: the inference function (Step 9, M4) and integration with the report (Step 10, all).
+Steps 1 to 9 of the plan are done: audit, cleaning, the three data-engineering questions, feature engineering, split and preprocessing, modeling, ablation, explainability and the inference function (Tasks 1–38 in the notebook). One step is left: integration and the report (Step 10, all).
 
-Against the plan's timeline the project is on schedule: 13–14 October is the window for tuning, ablation, XAI and the inference function.
+Against the plan's timeline the project is slightly ahead: 13–14 October is the window for tuning, ablation, XAI and the inference function, and all four are in the notebook.
 
-Steps 1 to 6 are committed and pushed. Steps 7 and 8 are in the working copy of the notebook and **not committed yet**. The notebook has still never been run on Kaggle.
+Steps 1 to 9 are committed. The notebook has still never been run on Kaggle.
 
 ---
 
@@ -26,12 +26,12 @@ All work is in [formula-1.ipynb](../formula-1.ipynb). A walk-through of every ta
 | 4. Feature engineering | M3 | 12–14 | 5 | Done | DEC-015 to DEC-018 |
 | 5. Split and preprocessing | M3 | 15–20 | 6 | Done | DEC-019 to DEC-021 |
 | 6. Modeling | M4 | 21–28 | 7 | Done | DEC-022 to DEC-030 |
-| 7. Ablation | M3 | 29–31 | 8 | Done, uncommitted | DEC-031 |
-| 8. Explainable AI | M2 | 32–35 | 9 | Done, uncommitted | DEC-032 |
-| 9. Inference function | M4 | | | Not started | |
+| 7. Ablation | M3 | 29–31 | 8 | Done | DEC-031 |
+| 8. Explainable AI | M2 | 32–35 | 9 | Done | DEC-032 |
+| 9. Inference function | M4 | 36–38 | 10 | Done | DEC-033 |
 | 10. Kaggle Run All and report PDF | All | | | Not started | |
 
-There are 36 figures in [figures/](../figures/): 11 from the audit and cleaning, 4 from the data-engineering questions, 5 from features, 3 from preprocessing, 5 from modeling, 2 from ablation and 6 from XAI.
+There are 38 figures in [figures/](../figures/): 11 from the audit and cleaning, 4 from the data-engineering questions, 5 from features, 3 from preprocessing, 5 from modeling, 2 from ablation, 6 from XAI and 2 from inference.
 
 ### Headline results
 
@@ -46,7 +46,7 @@ There are 36 figures in [figures/](../figures/): 11 from the audit and cleaning,
 - **The features are worth about 0.06 PR-AUC over the grid rule; model complexity adds nothing measurable.** On test, the untuned logistic regression is level with the tuned models.
 - **Ablation (Step 7):** no single feature group is significant, because the groups overlap. Removed as blocks: starting position −0.089 validation / −0.123 test, past results −0.061 / −0.042, context 0.000.
 - **XAI (Step 8):** `grid` carries 41% of SHAP magnitude; four of the 21 features are never used by the model. SHAP is reliable; LIME fails on low-score rows.
-- **The model output is a score, not a calibrated probability** (DEC-027). Step 9 has to deal with this.
+- **Inference (Step 9):** `predict_podium()` rebuilds the features with the training code and reproduces the stored features and scores for 36 held-out rows. The raw score is not a probability (DEC-027), so the function also returns a calibrated one: on test the mean probability is 0.161 against a podium rate of 0.151.
 
 ### What cleaning produced
 
@@ -80,7 +80,7 @@ Fifteen races from 1950–1960 keep four or five podium rows, because two driver
 
 ## 2. Open problems
 
-1. **Eighteen of the 32 decisions are still "Proposed"** in [decision_log.md](decision_log.md): DEC-009, 010, 012, 015–023, 025–027, 029, and the two new ones, DEC-031 and DEC-032. The team needs to approve or change them. DEC-009 and DEC-010 come first, because changing either changes the row counts above.
+1. **Nineteen of the 33 decisions are still "Proposed"** in [decision_log.md](decision_log.md): DEC-009, 010, 012, 015–023, 025–027, 029, and the three new ones, DEC-031 to DEC-033. The team needs to approve or change them. DEC-009 and DEC-010 come first, because changing either changes the row counts above.
 2. **The notebook has never been run on Kaggle.** It needs `lightgbm`, `tensorflow`/`keras`, `shap` and `lime`. The Kaggle dataset may also be a newer version than the local `archive/`, which would shift the row counts and every number quoted in the notebook's text.
 3. **The repo has no `requirements.txt`, README or `.gitignore`.** Local versions used: Python 3.11, pandas 2.3.3, scikit-learn 1.4.2, LightGBM 4.7.0, TensorFlow 2.19.1, SHAP 0.49.1.
 4. **Machine-specific paths.** `resolve_dataset_dir()` in the config cell has a `d:/GUC/...` fallback, and [Step 1,2 plan.md](Step%201,2%20plan.md) and [cleaning_notes.md](cleaning_notes.md) contain `file:///d:/...` links that are broken for everyone else.
@@ -99,16 +99,16 @@ Fifteen races from 1950–1960 keep four or five podium rows, because two driver
 
 ### Now
 
-1. Review and commit the Step 7 and Step 8 cells, the eight new figures and the decision-log changes, then push.
-2. M4 starts Step 9. Everything it needs is in the Step 6 hand-off cell of the notebook.
-3. M1 does the first Kaggle Run All. Doing it now, before Step 9 is finished, leaves time to fix environment problems.
+1. Push the Step 7, 8 and 9 commits so the team can pull them.
+2. M1 does the first Kaggle Run All. Doing it now leaves time to fix environment problems.
+3. Each owner reads the step written for them (M3: Step 7, M2: Step 8, M4: Step 9) and its decision, since they will have to defend it.
 
 ### Rest of the week (proposed)
 
 | Date | M1 Data | M2 Analytics | M3 Features | M4 Modeling |
 | :--- | :--- | :--- | :--- | :--- |
-| **Tue 13** | First Kaggle Run All; `requirements.txt`, README, `.gitignore` | Review Step 8 and DEC-032 | Review Step 7 and DEC-031 | Step 9: `predict_podium()` |
-| **Wed 14** | Report skeleton; fix machine-specific paths | Report: data-engineering questions and XAI | Report: features, preprocessing, ablation | Step 9 demo on a complete and an incomplete record; report: models |
+| **Tue 13** | First Kaggle Run All; `requirements.txt`, README, `.gitignore` | Review Step 8 and DEC-032 | Review Step 7 and DEC-031 | Review Step 9 and DEC-033 |
+| **Wed 14** | Report skeleton; fix machine-specific paths | Report: data-engineering questions and XAI | Report: features, preprocessing, ablation | Report: models and inference |
 | **Thu 15** | Notebook section 12 (limitations and future work); integrate | Decision approvals (all) | Decision approvals (all) | Decision approvals (all) |
 | **Fri 16** | **Code freeze**, final Kaggle Run All | Report figures | Report review | Report review |
 | **Sat 17** | Report PDF | Rehearsal: 10 minutes per member, every member questioned on every stage | | |
@@ -121,6 +121,6 @@ Fifteen races from 1950–1960 keep four or five podium rows, because two driver
 - **Kaggle environment.** The largest remaining risk, because it is untested and everything is submitted through it.
 - **Numbers in the text are typed, not computed.** The result paragraphs in the notebook quote numbers from the local run. If the Kaggle data or library versions shift the results, those paragraphs have to be checked against the new outputs.
 - **Small validation and test sets.** 775 validation rows (117 podiums, 39 races) and 68 test races. Differences below about 0.02 PR-AUC are noise; state this in the report.
-- **Score vs. probability.** If `predict_podium()` returns the raw model output and calls it a probability, it overstates the chance of a podium by about a factor of two.
+- **Score vs. probability.** `predict_podium()` returns both. The raw score overstates the chance of a podium by about a factor of two; only the calibrated value may be called a probability in the report.
 - **The test seasons have been used.** Any further change to the model or threshold that is judged on the test scores would turn them into a second validation set.
 - **Individual defense.** Every member has to defend every stage. Do not drop the rehearsal.
