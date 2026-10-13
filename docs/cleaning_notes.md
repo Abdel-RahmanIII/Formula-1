@@ -1,7 +1,7 @@
 # Formula 1 Data Cleaning & Contract Compliance Notes
 
 > **Target Audience:** Pipeline Engineer / Data Lead (**M1**) executing **Step 1 (Audit)** and **Step 2 (Data Cleaning)**.  
-> **Goal:** Ensure all cleaned tables and the downstream analytical table strictly satisfy the **Modeling Data Contract** ([DEC-005](file:///d:/GUC/Semester%209/ACL/Project/Formula%201/docs/decision_log.md#L15)) and pass programmatic validation without data leakage.
+> **Goal:** Ensure all cleaned tables and the downstream analytical table strictly satisfy the **Modeling Data Contract** ([DEC-005](decision_log.md#L15)) and pass programmatic validation without data leakage.
 
 ---
 
@@ -32,7 +32,7 @@ The raw dataset consists of 14 relational tables loaded from `archive/`. Below i
 
 ## 2. Core Contracts the Cleaner Must Satisfy
 
-When assembling the clean dataset and modeling table, your output must pass [`validate_data_contract()`](file:///d:/GUC/Semester%209/ACL/Project/Formula%201/formula-1.ipynb#L394-L442):
+When assembling the clean dataset and modeling table, your output must pass [`validate_data_contract()`](../formula-1.ipynb):
 
 1. **Table Grain:** Strictly one row per `(raceId, driverId)`.
    ```python
@@ -71,7 +71,7 @@ When assembling the clean dataset and modeling table, your output must pass [`va
       .drop(columns=['started_on_grid'])
   )
   ```
-* Document the rule and number of dropped rows in [decision_log.md](file:///d:/GUC/Semester%209/ACL/Project/Formula%201/docs/decision_log.md).
+* Document the rule and number of dropped rows in [decision_log.md](decision_log.md).
 
 ---
 
@@ -142,7 +142,7 @@ When assembling the clean dataset and modeling table, your output must pass [`va
 * **What happens:** Historical races often had more entrants than grid slots. Drivers who Did Not Qualify (`DNQ`), Did Not Pre-Qualify (`DNPQ`), or Did Not Start (`DNS`) appear in `results.csv`.
 * **The danger:** At prediction cutoff (after qualifying, before race start), we know these drivers are not on the grid and cannot finish on the podium.
 * **Required Cleaning Action:**
-  - Verify `positionText` for non-starters (`'D'`, `'W'`, `'F'`) or filter to confirmed starters (`grid > 0` or verified pit-lane starters). Document the exact filter in [decision_log.md](file:///d:/GUC/Semester%209/ACL/Project/Formula%201/docs/decision_log.md).
+  - Verify `positionText` for non-starters (`'D'`, `'W'`, `'F'`) or filter to confirmed starters (`grid > 0` or verified pit-lane starters). Document the exact filter in [decision_log.md](decision_log.md).
 
 ---
 
@@ -161,7 +161,7 @@ When assembling the clean dataset and modeling table, your output must pass [`va
 
 ---
 
-### ⚠️ Trap 9: Indianapolis 500 Scope Exclusion ([DEC-003](file:///d:/GUC/Semester%209/ACL/Project/Formula%201/docs/decision_log.md#L13))
+### ⚠️ Trap 9: Indianapolis 500 Scope Exclusion ([DEC-003](decision_log.md#L13))
 * **What happens:** From 1950 to 1960, the Indianapolis 500 was officially counted as a round of the F1 World Championship, but was run under AAA/USAC Champ Car oval rules with non-F1 constructors and American dirt-track specialists.
 * **Required Cleaning Action:**
   - Filter out Indy 500 races when building the F1 modeling set:

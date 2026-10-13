@@ -582,23 +582,33 @@ Limits to state: the race must be in the dataset (the function needs its date, c
 
 ---
 
+## Section 11: Step 10, limitations and future work
+
+Three markdown cells close the notebook. There is no code in this section.
+
+- **Where each requirement is met:** a table mapping every requirement of the brief to its notebook section, tasks and main evidence. Use it to find things quickly during the evaluation.
+- **Limitations,** grouped as data (qualifying coverage before 2003, training seasons unlike the test seasons, era boundaries, team rebrands), evaluation (small validation and test sets, thresholds that do not transfer, test seasons already used), model (mostly a model of the grid, in-race events, unused features) and inference (only races in the dataset).
+- **Future work:** team lineage in the features, a simpler model on fewer features, ranking within a race, more pre-race data, and tuning on several validation windows.
+
+---
+
 ## Where the notebook stands
 
-Steps 1 to 9 of the plan (Tasks 1–38) are in the notebook. Step 10 is left; the deadline is 18 October, 11:59 PM.
+Steps 1 to 9 of the plan (Tasks 1–38) and the limitations section are in the notebook. What is left of Step 10 is outside it; the deadline is 18 October, 11:59 PM.
 
 | Step | Owner | What is left |
 | :--- | :--- | :--- |
-| 10 | All | Notebook section on limitations and future work, a full Run All on Kaggle, the report PDF, and the rehearsal on 17 October. |
+| 10 | All | A full Run All on Kaggle, the team names and Kaggle link in the report ([report/report.md](../report/report.md)), and the rehearsal on 17 October. |
 
 **Open items outside the notebook (M1's role in [milestone_1_plan.md](milestone_1_plan.md))**
 
 | Item | Status |
 | :--- | :--- |
 | Team approval of the decisions still marked "Proposed" in [decision_log.md](decision_log.md) | **Open.** DEC-009 and DEC-010 matter most: changing either changes the row counts everything else is built on. |
-| Repo setup: `requirements.txt`, README, `.gitignore` | Not done |
+| Repo setup: `requirements.txt`, README, `.gitignore` | Done |
 | Kaggle setup and a full Run All there | Not done. The Kaggle dataset may be a newer version, which would shift the row counts. |
-| Remove the `d:/GUC/...` fallback in the config cell and the `file:///d:/` links in [Step 1,2 plan.md](Step%201,2%20plan.md) and [cleaning_notes.md](cleaning_notes.md) | Not done |
-| Final report assembly (Step 10) | Not started |
+| Machine-specific paths in the config cell and in the docs | Removed |
+| Final report assembly (Step 10) | Draft PDF in [report/](../report/); placeholders for team names and Kaggle link |
 
 **Things to carry into Step 10**
 

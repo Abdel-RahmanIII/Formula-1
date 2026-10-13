@@ -71,7 +71,7 @@
   - `drivers.dob` → `datetime64`
   - Race session time columns (`time`, `fp1_time`, `quali_time`, etc.) — parse or leave as string if not needed.
 - **Qualifying lap times → float seconds:**
-  - `q1`, `q2`, `q3` strings like `"1:23.456"` → numeric seconds using the `lap_time_to_seconds()` pattern from [cleaning_notes.md](file:///d:/GUC/Semester%209/ACL/Project/Formula%201/docs/cleaning_notes.md).
+  - `q1`, `q2`, `q3` strings like `"1:23.456"` → numeric seconds using the `lap_time_to_seconds()` pattern from [cleaning_notes.md](cleaning_notes.md).
   - Do **not** drop rows for `NaN` in `q2`/`q3` — those are structurally expected (knockout elimination).
 - **Numeric casting:**
   - `results.milliseconds`, `results.fastestLap`, `results.rank`, `drivers.number` — coerce to numeric.
@@ -82,7 +82,7 @@
 
 ## Task 5: Scope Filtering & Non-Starter Removal
 
-**Goal:** Remove rows that fall outside the modeling scope, per the decisions in [decision_log.md](file:///d:/GUC/Semester%209/ACL/Project/Formula%201/docs/decision_log.md).
+**Goal:** Remove rows that fall outside the modeling scope, per the decisions in [decision_log.md](decision_log.md).
 
 **Deliverables:**
 - **Exclude Indianapolis 500 (1950–1960):** Filter out races where `year ∈ [1950, 1960]` AND `name` contains "Indianapolis 500". Log the number of removed rows.
@@ -98,7 +98,7 @@
 **Goal:** Enforce the strict `(raceId, driverId)` composite grain by resolving the historical shared-drive duplicates.
 
 **Deliverables:**
-- Apply the deterministic deduplication rule from [cleaning_notes.md § Trap 1](file:///d:/GUC/Semester%209/ACL/Project/Formula%201/docs/cleaning_notes.md):
+- Apply the deterministic deduplication rule from [cleaning_notes.md § Trap 1](cleaning_notes.md):
   1. Prioritize the car the driver started in (`grid > 0`).
   2. Break ties by best `positionOrder`.
   3. Keep first, drop rest.
@@ -158,7 +158,7 @@ Task 1 → Task 2 → Task 3 → Task 4 → Task 5 → Task 6 → Task 7 → Tas
 
 ## Key References
 
-- [milestone_1_plan.md](file:///d:/GUC/Semester%209/ACL/Project/Formula%201/docs/milestone_1_plan.md) — Steps 1 & 2 specs
-- [cleaning_notes.md](file:///d:/GUC/Semester%209/ACL/Project/Formula%201/docs/cleaning_notes.md) — All 9 traps and contract rules
-- [decision_log.md](file:///d:/GUC/Semester%209/ACL/Project/Formula%201/docs/decision_log.md) — DEC-001 through DEC-008
-- [formula_1_guide.md](file:///d:/GUC/Semester%209/ACL/Project/Formula%201/docs/formula_1_guide.md) — Domain context for qualifying formats, eras, shared drives
+- [milestone_1_plan.md](milestone_1_plan.md) — Steps 1 & 2 specs
+- [cleaning_notes.md](cleaning_notes.md) — All 9 traps and contract rules
+- [decision_log.md](decision_log.md) — DEC-001 through DEC-008
+- [formula_1_guide.md](formula_1_guide.md) — Domain context for qualifying formats, eras, shared drives
