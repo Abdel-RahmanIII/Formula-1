@@ -29,7 +29,7 @@ All work is in [formula-1.ipynb](../formula-1.ipynb). A walk-through of every ta
 | 7. Ablation | M3 | 29–31 | 8 | Done | DEC-031 |
 | 8. Explainable AI | M2 | 32–35 | 9 | Done | DEC-032 |
 | 9. Inference function | M4 | 36–38 | 10 | Done | DEC-033 |
-| 10. Limitations and future work | All | | 11 | Done | |
+| 10. Limitations and future work, run check | All | | 11 | Done | |
 | 10. Repo setup (`README.md`, `requirements.txt`, `.gitignore`) | M1 | | | Done | |
 | 10. Report PDF | All | | | Draft in [report/](../report/); team names and Kaggle link missing | |
 | 10. Kaggle Run All | M1 | | | **Not started** | |
@@ -85,7 +85,7 @@ Fifteen races from 1950–1960 keep four or five podium rows, because two driver
 ## 2. Open problems
 
 1. **Nineteen of the 33 decisions are still "Proposed"** in [decision_log.md](decision_log.md): DEC-009, 010, 012, 015–023, 025–027, 029, and the three new ones, DEC-031 to DEC-033. The team needs to approve or change them. DEC-009 and DEC-010 come first, because changing either changes the row counts above.
-2. **The notebook has never been run on Kaggle.** It needs `lightgbm`, `tensorflow`/`keras`, `shap` and `lime`; the steps are in the [README](../README.md). The Kaggle dataset may also be a newer version than the local `archive/`, which would shift the row counts and every number quoted in the notebook's text and in the report.
+2. **The notebook has never been run on Kaggle.** It needs `lightgbm`, `tensorflow`/`keras`, `shap` and `lime` (the last two are installed by the notebook if missing, which needs Internet on); the steps are in the [README](../README.md). The Kaggle dataset may also be a newer version than the local `archive/`, which would shift the row counts and every number quoted in the notebook's text and in the report.
 3. **The report is a draft.** [report/report.md](../report/report.md) still has placeholders for the team names and the Kaggle link. Rebuild the PDF with `python report/build_report.py` after editing.
 4. **Older docs quote numbers the data does not support.** Use the notebook's numbers in the report:
 
@@ -101,7 +101,7 @@ Fifteen races from 1950–1960 keep four or five podium rows, because two driver
 
 ### Now
 
-1. M1 does the first Kaggle Run All. Doing it now leaves time to fix environment problems. If any number changes, the notebook text and the report have to be checked against the new outputs.
+1. M1 does the first Kaggle Run All. Doing it now leaves time to fix environment problems. The last cell of the notebook, **Run Check**, compares the headline numbers quoted in the text and the report with the run; if it reports a difference, the text that quotes that number has to be checked.
 2. Fill in the team names and the Kaggle link in [report/report.md](../report/report.md) and rebuild the PDF.
 3. Each owner reads the step written for them (M3: Step 7, M2: Step 8, M4: Step 9) and its decision, since they will have to defend it. Everyone reads the report.
 4. Approve or change the decisions still marked "Proposed".

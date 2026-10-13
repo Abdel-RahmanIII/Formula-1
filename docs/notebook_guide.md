@@ -584,11 +584,12 @@ Limits to state: the race must be in the dataset (the function needs its date, c
 
 ## Section 11: Step 10, limitations and future work
 
-Three markdown cells close the notebook. There is no code in this section.
+Four markdown cells and one code cell close the notebook.
 
 - **Where each requirement is met:** a table mapping every requirement of the brief to its notebook section, tasks and main evidence. Use it to find things quickly during the evaluation.
 - **Limitations,** grouped as data (qualifying coverage before 2003, training seasons unlike the test seasons, era boundaries, team rebrands), evaluation (small validation and test sets, thresholds that do not transfer, test seasons already used), model (mostly a model of the grid, in-race events, unused features) and inference (only races in the dataset).
 - **Future work:** team lineage in the features, a simpler model on fewer features, ranking within a race, more pre-race data, and tuning on several validation windows.
+- **Run Check** (the only code cell): a table of the headline numbers as quoted in the text and the report, next to the values of the current run, with a line saying whether all of them match. It also prints the library versions and the dataset's last race. It never raises. After a Run All on Kaggle this is the first cell to read.
 
 ---
 

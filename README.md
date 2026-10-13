@@ -28,7 +28,7 @@ The whole pipeline is in one notebook, [formula-1.ipynb](formula-1.ipynb): data 
 | [report/](report/) | The analytical report: source, build script and PDF |
 | [docs/notebook_guide.md](docs/notebook_guide.md) | Walk-through of every task and figure |
 | [docs/decision_log.md](docs/decision_log.md) | Every judgment call, with its evidence (DEC-001 to DEC-033) |
-| [docs/status_and_next_steps.md](docs/status_and_next_steps.md) | Current status and open items |
+| [docs/status_and_next_steps.md](docs/status_and_next_steps.md), [docs/project_status.pdf](docs/project_status.pdf) | Current status and open items |
 | [docs/milestone_1.md](docs/milestone_1.md), [docs/milestone_1_plan.md](docs/milestone_1_plan.md) | The brief and the team plan |
 
 ## Running the notebook
@@ -46,9 +46,10 @@ The notebook finds the data in `archive/` by itself. A full run takes a few minu
 
 1. Add the dataset [Formula 1 World Championship (1950–2024)](https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020) to the notebook. `resolve_dataset_dir()` looks under `/kaggle/input` first.
 2. Run All.
-3. If `import lime` or `import shap` fails, turn Internet on in the notebook settings and add a first cell with `!pip install lime shap`.
+3. If `shap` or `lime` is not preinstalled, the notebook installs it itself; this needs Internet turned on in the notebook settings.
+4. Read the last cell, **Run Check**. It compares the headline numbers quoted in the notebook text and the report with the numbers of this run, and says which ones differ, if any.
 
-The result paragraphs in the notebook quote numbers from the local run. If the Kaggle dataset version or library versions differ, compare those numbers with the new outputs.
+The result paragraphs in the notebook and the report quote numbers from the local run. If the Run Check reports a difference, check the text that quotes that number against the new outputs.
 
 ## Method in brief
 
