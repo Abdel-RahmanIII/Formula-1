@@ -1,39 +1,56 @@
 # Project Status and Next Steps
 
-**As of:** 12 October 2026 · **Deadline:** 18 October 2026, 11:59 PM (6 days left)
+**As of:** 13 October 2026 · **Deadline:** 18 October 2026, 11:59 PM (5 days left)
 **Submit:** Kaggle notebook link, GitHub repo link, report PDF.
 
 ## Summary
 
-The data stages are finished: the audit and all of cleaning (Steps 1 and 2) are done, and the cleaned base table `clean_df` now exists. The three data-engineering questions (Step 3) are also answered in notebook section 4. Feature engineering (Step 4) is done in notebook section 5 and produces `model_df`. The split, the preprocessing pipeline and its experiments (Step 5) are done in notebook section 6. Nothing from modeling, ablation, XAI, inference or the report has been started, and the project is about three days behind the original timeline.
+Steps 1 to 9 of the plan are done (Tasks 1–38 in the notebook), and most of Step 10 is in place: the limitations section of the notebook, the repo setup and a draft of the report PDF. What is left needs the team: the Kaggle Run All, the team names and Kaggle link in the report, the decision approvals and the rehearsal.
 
-M2, M3 and M4 are no longer blocked. The cleaning cells are in the working copy of the notebook but are **not committed or pushed yet**, and decisions DEC-009 and DEC-010 still need team approval.
+Against the plan's timeline the project is ahead: integration and the report were planned for 15–16 October.
+
+The notebook has still never been run on Kaggle.
 
 ---
 
 ## 1. Where we stand
 
-All work is in [formula-1.ipynb](../formula-1.ipynb) (52 cells). The last commit on `main` was on 9 October; Tasks 5–8 were added on 12 October and are uncommitted.
+All work is in [formula-1.ipynb](../formula-1.ipynb). A walk-through of every task and figure is in [notebook_guide.md](notebook_guide.md).
 
-| Step | Owner | Status | Notes |
-| :--- | :--- | :--- | :--- |
-| Shared components (config, plot helper, leakage guard, data contract) | All | Done | Notebook section 1 |
-| 1. Audit: inventory, keys, foreign keys, "before" EDA | M1 | Done | Six `before_eda_*` figures in [figures/](../figures/) |
-| 2. Cleaning, Task 4: typing and sentinels | M1 | Done | |
-| 2. Cleaning, Task 5: scope filter and non-starters | M1 | Done, uncommitted | DEC-009 and DEC-010 proposed |
-| 2. Cleaning, Task 6: shared-drive deduplication | M1 | Done, uncommitted | |
-| 2. Cleaning, Task 7: base table and `podium` target | M1 | Done, uncommitted | `clean_df` passes the data contract |
-| 2. Cleaning, Task 8: "after" EDA | M1 | Done, uncommitted | Five `after_eda_*` figures |
-| 3. Data-engineering questions Q1–Q3 | M2 | Done, uncommitted | Notebook section 4, four `de_q*` figures, DEC-011 to DEC-014 (DEC-012 proposed) |
-| 4. Feature engineering | M3 | Done, uncommitted | Notebook section 5: `model_df` with 21 features, two leakage tests, five `feat_*` figures, DEC-015 to DEC-018 proposed |
-| 5. Split and preprocessing experiments | M3 | Done, uncommitted | Notebook section 6: pipeline, window experiment, two order experiments, three `prep_*` figures, DEC-019 to DEC-021 proposed |
-| 6. Modeling (baselines, two ML models, shallow NN) | M4 | Not started | |
-| 7. Ablation | M3 | Not started | |
-| 8. XAI | M2 | Not started | |
-| 9. Inference function | M4 | Not started | |
-| 10. Kaggle Run All and report PDF | All | Not started | |
+| Step | Owner | Tasks | Notebook section | Status | Decisions |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Shared components | All | | 1 | Done | DEC-001 to DEC-007 |
+| 1. Data audit | M1 | 1–3 | 2 | Done | |
+| 2. Data cleaning | M1 | 4–8 | 3 | Done | DEC-008 to DEC-010 |
+| 3. Data-engineering questions | M2 | 9–11 | 4 | Done | DEC-011 to DEC-014 |
+| 4. Feature engineering | M3 | 12–14 | 5 | Done | DEC-015 to DEC-018 |
+| 5. Split and preprocessing | M3 | 15–20 | 6 | Done | DEC-019 to DEC-021 |
+| 6. Modeling | M4 | 21–28 | 7 | Done | DEC-022 to DEC-030 |
+| 7. Ablation | M3 | 29–31 | 8 | Done | DEC-031 |
+| 8. Explainable AI | M2 | 32–35 | 9 | Done | DEC-032 |
+| 9. Inference function | M4 | 36–38 | 10 | Done | DEC-033 |
+| 10. Limitations and future work, run check | All | | 11 | Done | |
+| 10. Repo setup (`README.md`, `requirements.txt`, `.gitignore`) | M1 | | | Done | |
+| 10. Report PDF | All | | | Draft in [report/](../report/); team names and Kaggle link missing | |
+| 10. Kaggle Run All | M1 | | | **Not started** | |
+| 10. Rehearsal | All | | | 17 October | |
 
-Decisions DEC-001 to DEC-010 are logged in [decision_log.md](decision_log.md). The task-level spec for Steps 1 and 2 is in [Step 1,2 plan.md](Step%201,2%20plan.md).
+There are 38 figures in [figures/](../figures/): 11 from the audit and cleaning, 4 from the data-engineering questions, 5 from features, 3 from preprocessing, 5 from modeling, 2 from ablation, 6 from XAI and 2 from inference.
+
+### Headline results
+
+| Result | Number |
+| :--- | :--- |
+| Selected model | LightGBM (DEC-029) |
+| PR-AUC, validation / test | 0.743 / 0.709 |
+| Grid ≤ 3 rule, validation / test | 0.648 / 0.647 |
+| Logistic regression, validation / test | 0.728 / 0.711 |
+| LightGBM test F1 at its tuned threshold | 0.689 (grid rule 0.649) |
+
+- **The features are worth about 0.06 PR-AUC over the grid rule; model complexity adds nothing measurable.** On test, the untuned logistic regression is level with the tuned models.
+- **Ablation (Step 7):** no single feature group is significant, because the groups overlap. Removed as blocks: starting position −0.089 validation / −0.123 test, past results −0.061 / −0.042, context 0.000.
+- **XAI (Step 8):** `grid` carries 41% of SHAP magnitude; four of the 21 features are never used by the model. SHAP is reliable; LIME fails on low-score rows.
+- **Inference (Step 9):** `predict_podium()` rebuilds the features with the training code and reproduces the stored features and scores for 36 held-out rows. The raw score is not a probability (DEC-027), so the function also returns a calibrated one: on test the mean probability is 0.161 against a podium rate of 0.151.
 
 ### What cleaning produced
 
@@ -65,15 +82,14 @@ Fifteen races from 1950–1960 keep four or five podium rows, because two driver
 
 ---
 
-## 2. Problems in what is already committed
+## 2. Open problems
 
-1. **Fixed: missing outputs.** Cells from Task 3 onward now carry outputs from a clean top-to-bottom run (Python 3.14, pandas 2.3.3). Cells before Task 3 keep their earlier outputs.
-2. **Fixed: pandas 3 failure.** Cell 32 asserted `dtype == object`, which is false on pandas 3 because strings load as `str`. The check now uses `pd.api.types`, and the whole notebook runs clean on both pandas 2.3.3 and 3.0.6. Kaggle itself is still untested.
-3. **The repo has no `requirements.txt`, README or `.gitignore`.** Nobody can tell which pandas version the notebook expects. Add a pinned `requirements.txt` at least.
-4. **Machine-specific paths.** `resolve_dataset_dir()` in cell 2 has a `d:/GUC/...` fallback, and [Step 1,2 plan.md](Step%201,2%20plan.md) links use `file:///d:/...`, which are broken for everyone else. Remove the fallback and make the links relative.
-5. **The docs quote three numbers that the data does not support.** Fix them before they reach the report:
+1. **Nineteen of the 33 decisions are still "Proposed"** in [decision_log.md](decision_log.md): DEC-009, 010, 012, 015–023, 025–027, 029, and the three new ones, DEC-031 to DEC-033. The team needs to approve or change them. DEC-009 and DEC-010 come first, because changing either changes the row counts above.
+2. **The notebook has never been run on Kaggle.** It needs `lightgbm`, `tensorflow`/`keras`, `shap` and `lime` (the last two are installed by the notebook if missing, which needs Internet on); the steps are in the [README](../README.md). The Kaggle dataset may also be a newer version than the local `archive/`, which would shift the row counts and every number quoted in the notebook's text and in the report.
+3. **The report is a draft.** [report/report.md](../report/report.md) still has placeholders for the team names and the Kaggle link. Rebuild the PDF with `python report/build_report.py` after editing.
+4. **Older docs quote numbers the data does not support.** Use the notebook's numbers in the report:
 
-   | Docs say | Data says |
+   | Older docs say | Data says |
    | :--- | :--- |
    | 176 duplicate rows to remove | 176 rows are *involved* in duplicates (85 groups). Only 91 are surplus, and 64 remain after Task 5. |
    | Podium base rate ≈ 15% | 12.69% raw, 13.67% after cleaning. It is 15% only in the modern 20-car era. |
@@ -85,32 +101,29 @@ Fifteen races from 1950–1960 keep four or five podium rows, because two driver
 
 ### Now
 
-1. Review and commit the Task 5–8 cells, the five new figures and the decision-log changes, then push so the others can pull `clean_df`.
-2. Approve or change DEC-009 and DEC-010. Changing either one changes the row counts above.
-3. Fix the remaining items in Section 2 (`requirements.txt`, machine-specific paths, the three wrong numbers in the docs).
+1. M1 does the first Kaggle Run All. Doing it now leaves time to fix environment problems. The last cell of the notebook, **Run Check**, compares the headline numbers quoted in the text and the report with the run; if it reports a difference, the text that quotes that number has to be checked.
+2. Fill in the team names and the Kaggle link in [report/report.md](../report/report.md) and rebuild the PDF.
+3. Each owner reads the step written for them (M3: Step 7, M2: Step 8, M4: Step 9) and its decision, since they will have to defend it. Everyone reads the report.
+4. Approve or change the decisions still marked "Proposed".
 
-### Rest of the week
-
-The original plan had feature freeze today. This schedule compresses the remaining work into five days and keeps Sunday as buffer.
+### Rest of the week (proposed)
 
 | Date | M1 Data | M2 Analytics | M3 Features | M4 Modeling |
 | :--- | :--- | :--- | :--- | :--- |
-| **Mon 12** | Commit and push Tasks 5–8, fixes from Section 2, DEC-009/010 approval | Status → category and nationality → country mappings | Lagged-standings and rolling-form helpers on raw tables | Metric and evaluation harness |
-| **Tue 13** | Support M2 and M3 on `clean_df` | Q1 and Q2 | Features v1 (grid, qualifying, form) | `grid ≤ 3` rule and logistic regression on a grid-only table |
-| **Wed 14** | Report skeleton | Q3, write up Q1–Q3 | **Feature freeze**, leakage unit test, split | Random forest, gradient boosting |
-| **Thu 15** | Report: data sections | XAI on current best model | Pipeline and the two preprocessing-order experiments | Shallow NN, tuning, thresholds |
-| **Fri 16** | First Kaggle Run All | XAI final | Ablation by `FEATURE_GROUPS` | Comparison table, `predict_podium()` |
-| **Sat 17** | **Code freeze**, final Kaggle Run All, report PDF | Report figures | Report: features and ablation | Report: models |
-| **Sun 18** | Rehearsal in the morning, then submit | | | |
-
+| **Tue 13** | First Kaggle Run All | Review Step 8 and DEC-032 | Review Step 7 and DEC-031 | Review Step 9 and DEC-033 |
+| **Wed 14** | Review report sections 1–2; team names and Kaggle link | Review report sections 3 and 8 | Review report sections 4, 5 and 7 | Review report sections 6 and 9 |
+| **Thu 15** | Decision approvals (all) | Decision approvals (all) | Decision approvals (all) | Decision approvals (all) |
+| **Fri 16** | **Code freeze**, final Kaggle Run All, check numbers | Report review | Report review | Report review |
+| **Sat 17** | Final report PDF | Rehearsal: 10 minutes per member, every member questioned on every stage | | |
+| **Sun 18** | Buffer, then submit | | | |
 
 ---
 
 ## 4. Risks to plan around
 
-- **Kaggle environment.** The notebook has never been run on Kaggle. The first Run All should be on Friday at the latest. The dataset on Kaggle may also be a newer version than the local `archive/`, which would shift the row counts.
-- **Small validation set.** 775 rows with 117 podiums makes tuning and threshold choices noisy. Prefer simple models and state this limitation in the report.
-- **Thin qualifying coverage before 2003.** This affects Q1 (the "pre-2014" era is effectively 2003–2013 for qualifying-based front rows) and the training-window experiment in Step 5.
-- **One qualifying outlier.** 1995 Japanese GP (`raceId` 255, `driverId` 87) has `q1 = "16:42.640"`, which parses to 1,002.64 s. Cap gap-to-pole or set this value to `NaN`.
-- **Sprint features are optional.** Cut them first if time runs out.
-- **Individual defense.** Every member has to defend every stage. Do not drop the Sunday rehearsal.
+- **Kaggle environment.** The largest remaining risk, because it is untested and everything is submitted through it.
+- **Numbers in the text are typed, not computed.** The result paragraphs in the notebook quote numbers from the local run. If the Kaggle data or library versions shift the results, those paragraphs have to be checked against the new outputs.
+- **Small validation and test sets.** 775 validation rows (117 podiums, 39 races) and 68 test races. Differences below about 0.02 PR-AUC are noise; state this in the report.
+- **Score vs. probability.** `predict_podium()` returns both. The raw score overstates the chance of a podium by about a factor of two; only the calibrated value may be called a probability in the report.
+- **The test seasons have been used.** Any further change to the model or threshold that is judged on the test scores would turn them into a second validation set.
+- **Individual defense.** Every member has to defend every stage. Do not drop the rehearsal.
