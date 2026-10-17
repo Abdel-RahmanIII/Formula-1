@@ -1,0 +1,871 @@
+<title>Podium Model Study Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one reading column; a four-stint strip (A–D follow the pipeline order) switches panels; Q&A as self-test cards. Palette taken from the notebook's own F1_PALETTE. */
+:root {
+  --paper: #F5F5F8;
+  --surface: #FFFFFF;
+  --ink: #15151E;
+  --muted: #5B5B69;
+  --rule: #DADAE2;
+  --accent: #C70500;
+  --p-all: #15151E;
+  --p-a: #C70500;
+  --p-b: #00877A;
+  --p-c: #1E41FF;
+  --p-d: #C2o5E00;
+  --warn-bg: #FFF4E5;
+  --warn-ink: #7A3E00;
+  --warn-rule: #F0C48A;
+  --ok: #1D7A55;
+  --code-bg: #EEEEF3;
+  --display: "Barlow Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #111117; --surface: #1A1A23; --ink: #ECECF2; --muted: #A3A3B2; --rule: #2E2E3A; --accent: #FF4B42;
+    --p-all: #ECECF2; --p-a: #FF4B42; --p-b: #2FD9C4; --p-c: #7D93FF; --p-d: #FF9A3D;
+    --warn-bg: #2A1E10; --warn-ink: #F6C98E; --warn-rule: #5C3E17; --ok: #4FD39A; --code-bg: #24242F;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #111117; --surface: #1A1A23; --ink: #ECECF2; --muted: #A3A3B2; --rule: #2E2E3A; --accent: #FF4B42;
+  --p-all: #ECECF2; --p-a: #FF4B42; --p-b: #2FD9C4; --p-c: #7D93FF; --p-d: #FF9A3D;
+  --warn-bg: #2A1E10; --warn-ink: #F6C98E; --warn-rule: #5C3E17; --ok: #4FD39A; --code-bg: #24242F;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: var(--body); font-size: 15.5px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 64px;
+}
+.wrap { max-width: 900px; margin: 0 auto; display: grid; gap: 28px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.05; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2.4rem, 7vw, 3.6rem); letter-spacing: 0.005em; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.05rem; font-family: var(--mono); font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+p { margin: 0; max-width: 68ch; }
+code { font-family: var(--mono); font-size: 0.88em; background: var(--code-bg); padding: 0.05em 0.35em; border-radius: 3px; overflow-wrap: anywhere; }
+.eyebrow { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+header { display: grid; gap: 14px; }
+.lede { color: var(--muted); font-size: 1.05rem; }
+
+.notice { background: var(--warn-bg); color: var(--warn-ink); border: 1px solid var(--warn-rule); border-radius: 6px; padding: 16px 18px; display: grid; gap: 8px; }
+.notice strong { font-weight: 600; }
+.notice ol { margin: 0; padding-left: 1.3em; display: grid; gap: 4px; max-width: 72ch; }
+
+/* The stint strip */
+.strip { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; background: var(--surface); }
+.tab { appearance: none; border: 0; background: transparent; color: var(--ink); font: inherit; text-align: left; cursor: pointer;
+  padding: 12px 12px 12px; border-top: 4px solid transparent; border-right: 1px solid var(--rule); display: grid; gap: 2px; min-width: 0; }
+.tab:last-child { border-right: 0; }
+.tab .who { font-family: var(--display); font-size: 1.35rem; font-weight: 700; line-height: 1; }
+.tab .what { font-size: 0.82rem; color: var(--muted); line-height: 1.3; }
+.tab .cells { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
+.tab:hover { background: var(--paper); }
+.tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.tab[aria-selected="true"] { border-top-color: var(--pc); background: var(--paper); }
+.tab[aria-selected="true"] .who { color: var(--pc); }
+@media (max-width: 720px) {
+  .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tab { border-bottom: 1px solid var(--rule); }
+  .tab:nth-child(2n) { border-right: 0; }
+  .tab:first-child { grid-column: 1 / -1; border-right: 0; }
+}
+
+.panel { display: grid; gap: 26px; }
+.panel-head { display: grid; gap: 8px; border-left: 4px solid var(--pc); padding-left: 14px; }
+.panel-head .meta { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
+section { display: grid; gap: 12px; min-width: 0; }
+
+.table-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+th, td { text-align: left; vertical-align: top; padding: 8px 12px; border-bottom: 1px solid var(--rule); }
+tr:last-child td { border-bottom: 0; }
+th { font-family: var(--mono); font-weight: 500; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); background: var(--paper); }
+td.c { font-family: var(--mono); font-size: 0.8rem; white-space: nowrap; color: var(--muted); font-variant-numeric: tabular-nums; }
+td.t { white-space: nowrap; font-weight: 500; }
+
+.numbers { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0 24px; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 6px 16px; margin: 0; }
+.numbers div { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-bottom: 1px dashed var(--rule); min-width: 0; }
+.numbers dt { color: var(--muted); font-size: 0.88rem; }
+.numbers dd { margin: 0; font-family: var(--mono); font-size: 0.86rem; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+
+.qa-bar { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; }
+.btn { appearance: none; font: inherit; font-size: 0.85rem; font-weight: 500; color: var(--ink); background: var(--surface); border: 1px solid var(--rule); border-radius: 4px; padding: 6px 12px; cursor: pointer; }
+.btn:hover { border-color: var(--pc); }
+.btn:focus-visible { outline: 2px solid var(--pc); outline-offset: 2px; }
+.progress { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
+.progress b { color: var(--ok); font-weight: 500; }
+
+ol.qa { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; counter-reset: q; }
+ol.qa > li { counter-increment: q; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; }
+ol.qa > li.known { border-color: color-mix(in srgb, var(--ok) 45%, var(--rule)); }
+details { min-width: 0; }
+summary { cursor: pointer; list-style: none; padding: 12px 8px 12px 14px; display: grid; grid-template-columns: 2.6em minmax(0, 1fr); gap: 4px; font-weight: 500; }
+summary::-webkit-details-marker { display: none; }
+summary::before { content: "Q" counter(q); font-family: var(--mono); font-size: 0.78rem; color: var(--pc); padding-top: 0.2em; }
+summary:focus-visible { outline: 2px solid var(--pc); outline-offset: -2px; border-radius: 6px; }
+details[open] summary { color: var(--ink); }
+.ans { padding: 0 14px 14px calc(14px + 2.6em + 4px); display: grid; gap: 8px; }
+.ans p, .ans ul { max-width: 70ch; }
+.ans ul { margin: 0; padding-left: 1.2em; display: grid; gap: 3px; }
+.where { font-family: var(--mono); font-size: 0.76rem; color: var(--muted); }
+.know { display: flex; align-items: center; gap: 6px; padding: 12px 14px 12px 4px; font-size: 0.78rem; color: var(--muted); cursor: pointer; white-space: nowrap; user-select: none; }
+.know input { accent-color: var(--ok); width: 16px; height: 16px; margin: 0; }
+@media (max-width: 520px) {
+  ol.qa > li { grid-template-columns: minmax(0, 1fr); }
+  .know { padding: 0 14px 12px calc(14px + 2.6em + 4px); }
+  .ans { padding-left: 14px; }
+}
+footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--rule); padding-top: 16px; }
+@media (prefers-reduced-motion: no-preference) { .tab, .btn, ol.qa > li { transition: background-color .15s, border-color .15s; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">CSEN 903 · Milestone 1 · formula-1.ipynb · 206 cells</div>
+    <h1>Podium Model Study Guide</h1>
+    <p class="lede">The notebook split into four contiguous stretches of about 620–690 lines of code each, one per person. Each tab lists the cells you own, the numbers to know, and the questions an examiner is likely to ask, with answers hidden so you can test yourself. Everyone should also know the Everyone tab.</p>
+  </header>
+
+  <div class="notice" role="note">
+    <p><strong>Fix before the evaluation: the notebook's text and its outputs disagree.</strong> The saved outputs come from a run made after the shared-drive fix (DEC-034, 24,482 rows), but much of the markdown still quotes an older run (24,575 rows), and the tuning code in Tasks 21–25 (DEC-037, uncommitted) was edited after the last run. The Run Check in the last cell flags 19 of 25 headline numbers in the saved notebook and 16 of 25 after a fresh run. This guide quotes that fresh run of the current code.</p>
+    <ol>
+      <li>Restart the kernel and Run All.</li>
+      <li>Update every result paragraph the Run Check flags, then the <code>HEADLINE_NUMBERS</code> dict, until it prints “All 25 headline numbers match”.</li>
+      <li>Fix the passages that are now wrong, not only the numbers. They are listed under “Stale text” in the Everyone tab.</li>
+    </ol>
+  </div>
+
+  <nav class="strip" role="tablist" aria-label="Study sections">
+    <button class="tab" role="tab" id="tab-all" aria-controls="all" data-tab="all" style="--pc: var(--p-all)">
+      <span class="who">Everyone</span><span class="what">Shared questions, stale text</span><span class="cells">read first</span>
+    </button>
+    <button class="tab" role="tab" id="tab-a" aria-controls="a" data-tab="a" style="--pc: var(--p-a)">
+      <span class="who">Person A</span><span class="what">Setup, audit, cleaning</span><span class="cells">cells 1–44</span>
+    </button>
+    <button class="tab" role="tab" id="tab-b" aria-controls="b" data-tab="b" style="--pc: var(--p-b)">
+      <span class="who">Person B</span><span class="what">Q1–Q3, features, leakage</span><span class="cells">cells 45–87</span>
+    </button>
+    <button class="tab" role="tab" id="tab-c" aria-controls="c" data-tab="c" style="--pc: var(--p-c)">
+      <span class="who">Person C</span><span class="what">Split, preprocessing, models</span><span class="cells">cells 88–148</span>
+    </button>
+    <button class="tab" role="tab" id="tab-d" aria-controls="d" data-tab="d" style="--pc: var(--p-d)">
+      <span class="who">Person D</span><span class="what">Ablation, XAI, inference</span><span class="cells">cells 149–206</span>
+    </button>
+  </nav>
+
+  <!-- ===================== EVERYONE ===================== -->
+  <div class="panel" role="tabpanel" id="all" aria-labelledby="tab-all" style="--pc: var(--p-all)">
+    <div class="panel-head">
+      <h2>Everyone</h2>
+      <p class="meta">Questions any member can be asked, whichever cells they own</p>
+    </div>
+
+    <section>
+      <h3>The project in four sentences</h3>
+      <p>We predict whether a driver finishes on the podium (<code>positionOrder &lt;= 3</code>) using only what is known after qualifying and before the start. The Ergast data (14 tables, 1950–2024) is audited and cleaned to one row per driver per race (24,482 rows), and 21 leakage-tested features are built in six groups. Five predictors are compared on a season-based split (train ≤ 2019, validation 2020–2021, test 2022–2024), and LightGBM is carried forward to ablation, SHAP/LIME and a <code>predict_podium()</code> function with calibrated probabilities. On the test seasons the learned models reach a PR-AUC of 0.707–0.720 against 0.647 for the “grid ≤ 3” rule, and none of them is measurably better than plain logistic regression.</p>
+    </section>
+
+    <section>
+      <h3>Who owns what</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Person</th><th>Cells</th><th>Notebook sections</th><th>Tasks</th><th>Decisions to defend</th></tr></thead>
+        <tbody>
+          <tr><td class="t">A</td><td class="c">1–44</td><td>1 Shared components, 2 Audit, 3 Cleaning</td><td class="c">1–8</td><td>DEC-001 to 007, 003, 009, 010, 034</td></tr>
+          <tr><td class="t">B</td><td class="c">45–87</td><td>4 Data-engineering questions, 5 Feature engineering</td><td class="c">9–14</td><td>DEC-012, 014 to 018, 035, 036</td></tr>
+          <tr><td class="t">C</td><td class="c">88–148</td><td>6 Split and preprocessing, 7 Modeling</td><td class="c">15–28</td><td>DEC-002, 019 to 030, 037</td></tr>
+          <tr><td class="t">D</td><td class="c">149–206</td><td>8 Ablation, 9 XAI, 10 Inference, 11 Limitations</td><td class="c">29–38</td><td>DEC-031, 032, 033</td></tr>
+        </tbody>
+      </table></div>
+      <p class="where">This split balances the code evenly by notebook order. It differs from the M1–M4 roles in cell 1 (for example, M3 owns both features and ablation there); swap sections if your examiner goes by those roles.</p>
+    </section>
+
+    <section>
+      <div class="qa-bar"><h3>Shared questions</h3><div><span class="progress"></span> <button class="btn" data-toggle-all>Show all answers</button></div></div>
+      <ol class="qa">
+        <li><details><summary>What is the target, and what may a feature use?</summary><div class="ans">
+          <p><code>podium = 1</code> when <code>positionOrder &lt;= 3</code>. The prediction is made after qualifying and before the start, so a feature may use the grid slot, the qualifying session and anything from earlier races. It may not use anything from the race itself or standings updated after it.</p>
+          <p class="where">Cell 1 · DEC-004</p></div></details></li>
+        <li><details><summary>Why is the data split by season and not at random?</summary><div class="ans">
+          <ul>
+            <li>It matches use: train on the past, predict a race that has not happened.</li>
+            <li>Rows of one race are not independent. Exactly three drivers per race reach the podium, so a random split would let the model learn a race's outcome from its neighbours in training.</li>
+            <li>Regulations change by era. Keeping 2022 (new ground-effect cars) out of training tests whether the model carries over to new rules.</li>
+          </ul>
+          <p class="where">Task 15 · DEC-002</p></div></details></li>
+        <li><details><summary>Why is PR-AUC the main metric, and not accuracy or ROC-AUC?</summary><div class="ans">
+          <p>Only about 15% of rows are podiums. Accuracy rewards predicting “no podium” everywhere (85% correct, useless). ROC-AUC also rewards ranking the many easy back-of-grid negatives, so every model sits around 0.93 and differences hide. PR-AUC (average precision) measures how well the few positives are ranked at the top, without picking a threshold. F1 at a tuned threshold is the secondary metric.</p>
+          <p class="where">Task 21 · DEC-022</p></div></details></li>
+        <li><details><summary>Where could leakage enter this pipeline, and what stops it?</summary><div class="ans">
+          <ul>
+            <li><b>Outcome columns as features:</b> a name-based blacklist and regex guard (Section 1.3), checked in the data contract.</li>
+            <li><b>History features that include the current race:</b> sort by date and <code>shift(1)</code>, proven by a brute-force recomputation and a corruption test (Task 13).</li>
+            <li><b>Standings recorded after the race:</b> use the previous round's table (Task 12.5), with an assertion that it predates the race.</li>
+            <li><b>Shared drives:</b> one driver's grid paired with another's result, so those rows are removed (DEC-034).</li>
+            <li><b>Preprocessing statistics:</b> the imputer and scaler are fitted on training rows only (Task 19 measures the alternative).</li>
+            <li><b>Model selection:</b> everything is chosen on validation; the test seasons are scored once, in Task 28.</li>
+          </ul></div></details></li>
+        <li><details><summary>What is the headline result?</summary><div class="ans">
+          <p>Test PR-AUC (2022–2024, 68 races): grid ≤ 3 rule 0.647, logistic regression 0.712, random forest 0.707, LightGBM 0.709, neural network 0.720.</p>
+          <ul>
+            <li>The extra features are worth about 0.06 PR-AUC over the grid rule: the rule is 0.064 below logistic regression (95% interval −0.118 to −0.011).</li>
+            <li>Model complexity adds nothing measurable: every learned model's difference to logistic regression has an interval that includes zero.</li>
+            <li>Most of the signal is the starting position (ablation and SHAP); past results add about 0.03–0.06 on top; context adds nothing.</li>
+          </ul>
+          <p class="where">Tasks 28, 31, 33</p></div></details></li>
+        <li><details><summary>Which model was selected, and was that the right call?</summary><div class="ans">
+          <p>LightGBM, by a rule fixed in advance: highest validation PR-AUC (0.743). On test it scores 0.709, behind the network (0.720) and level with logistic regression (0.712), all within noise. The choice is not revisited, because picking a model from test scores would turn the test seasons into a second validation set. Logistic regression would be an equally defensible and simpler choice; LightGBM was also convenient because it takes raw features with missing values and works with SHAP's exact <code>TreeExplainer</code>.</p>
+          <p class="where">Tasks 27.2, 28 · DEC-029, DEC-030</p></div></details></li>
+        <li><details><summary>What is the biggest limitation of the work?</summary><div class="ans">
+          <p>Any pre-race model has a ceiling: crashes, safety cars, penalties, weather and strategy happen during the race and are not in the inputs. The 2020 Italian GP cases in Task 34 show the model reading its inputs correctly and the outcome still going the other way. Beyond that: validation and test are small (39 and 68 races), so learned models cannot be separated from each other, and qualifying data is missing in about 63% of the training rows.</p>
+          <p class="where">Limitations, cells 203–204</p></div></details></li>
+        <li><details><summary>What is the decision log, and why does the notebook cite DEC numbers?</summary><div class="ans">
+          <p><code>docs/decision_log.md</code> records every scope, cleaning, feature and modeling choice with its evidence and status (DEC-001 to DEC-037). Some decisions replace earlier ones after instructor rulings on Piazza: DEC-034 replaces DEC-008 (shared drives), DEC-035 replaces DEC-011 (Q1 uses the grid), DEC-036 replaces DEC-013 (tyre failures are mechanical). Know the replaced ones too; examiners ask why something changed.</p></div></details></li>
+      </ol>
+    </section>
+
+    <section>
+      <h3>Stale text to fix before presenting</h3>
+      <p>Each cell below quotes something that a fresh run no longer shows. The new values are from that run. The bold rows change a statement, not only a number.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Cell</th><th>Where</th><th>Text says → a fresh run gives</th></tr></thead>
+        <tbody>
+          <tr><td class="c">1</td><td class="t">Intro</td><td>“covers … modeling (Section 7)” → the notebook runs to Section 11</td></tr>
+          <tr><td class="c">44</td><td class="t">Step 2 hand-off</td><td><b>DEC-008, 64 rows removed, 24,575 rows → DEC-034, 157 removed, 24,482.</b> Train 22,448 / 3,038 / 13.53% → 22,355 / 3,004 / 13.44%. Base rate 13.67% → 13.58%. <b>“Fifteen races have four or five podium rows” → no race has more than three (13 have two, 2 have one).</b></td></tr>
+          <tr><td class="c">57</td><td class="t">Q2 answer</td><td>Home 11.92% vs. away 13.82% → 11.57% vs. 13.75%. CMH 0.95 (0.80–1.13, p 0.61) → 0.91 (0.76–1.08, p 0.31). Logit 0.95 → 0.91 (p 0.35); checks 0.97 / 0.94 / 0.94 → 0.92 / 0.90 / 0.91. 24,575 starts, 1,930 home → 24,482, 1,902. “At most about 13% higher odds” → about 8%.</td></tr>
+          <tr><td class="c">87</td><td class="t">Step 4 hand-off</td><td>24,575 rows → 24,482. Grid alone ROC-AUC 0.883 → 0.884; tenth slot 5.7% → 5.8%</td></tr>
+          <tr><td class="c">98, 113</td><td class="t">Task 17, Step 5 hand-off</td><td>Logistic 0.729 / 0.719 / 0.725 / 0.728 → 0.727 / 0.719 / 0.725 / 0.729. Median vs. fallback 0.7290 vs. 0.7284 → 0.7269 vs. 0.7262. Gradient boosting 0.704 → 0.713</td></tr>
+          <tr><td class="c">121</td><td class="t">Task 22</td><td>Logistic regression 0.728 → 0.726</td></tr>
+          <tr><td class="c">124</td><td class="t">Task 23</td><td>Forest 0.739 → 0.735; search range 0.666–0.739 → 0.668–0.738 (seed means)</td></tr>
+          <tr><td class="c">128</td><td class="t">Task 24</td><td>Untuned 0.707 → 0.702; range 0.676–0.743 → 0.689–0.742; input forms +0.004 / −0.003 → −0.003 / −0.004</td></tr>
+          <tr><td class="c">133</td><td class="t">Task 25</td><td>0.738 → 0.733; “stopped after 63 epochs, kept epoch 53” → best epoch 13; seeds 0.733–0.742 (mean 0.737) → 0.726–0.738 (mean 0.732)</td></tr>
+          <tr><td class="c">136</td><td class="t">Task 26</td><td>Forest −0.009 → −0.007, LightGBM −0.014 → −0.016; weighted mean probability 0.30–0.33 → 0.31–0.34</td></tr>
+          <tr><td class="c">139, 141</td><td class="t">Task 27</td><td>Thresholds 0.64 / 0.74 / 0.74 / 0.82 → 0.59 / 0.76 / 0.75 / 0.74. Tuned F1 0.709–0.721 → 0.710–0.711. Rule −0.081 → −0.078; forest / LightGBM / network +0.011 / +0.014 / +0.009 → +0.008 / +0.016 / +0.007</td></tr>
+          <tr><td class="c">147</td><td class="t">Test results</td><td>Test PR-AUC: forest 0.710 → 0.707, <b>network 0.701 → 0.720, now the highest</b>. Drops validation → test: <b>LR 0.015, forest 0.028, LightGBM 0.034, network only 0.013</b>, so point 3 holds for the tree models only. Thresholds predict 3.75–5.2 podiums per race. LightGBM: 157 found, 47 missed, 98 false alarms; test F1 0.670–0.684</td></tr>
+          <tr><td class="c">152</td><td class="t">Task 29</td><td>Seed spread 0.738–0.745 / 0.712–0.718 → 0.740–0.744 / 0.707–0.717</td></tr>
+          <tr><td class="c">156</td><td class="t">Task 30</td><td>Whole table: grid −0.015 / −0.019 → −0.017 / −0.018; qualifying −0.019 / +0.011 → −0.015 / +0.014; others within ±0.006</td></tr>
+          <tr><td class="c">161</td><td class="t">Task 31</td><td>Starting position −0.089 / −0.123 → −0.085 / −0.121. Past results −0.061 / −0.042 → −0.064 / −0.031, <b>and its test interval now includes zero (−0.065 to +0.006), so “both intervals exclude zero on validation and test” is false.</b> Alone table values all move by up to 0.02</td></tr>
+          <tr><td class="c">167</td><td class="t">Task 32</td><td>Grid 0.238 → 0.229; blocks 0.394 / 0.160 → 0.390 / 0.167; sum of single drops 0.318 → 0.311</td></tr>
+          <tr><td class="c">173</td><td class="t">Task 33</td><td>Grid 41% → 40% of SHAP; block shares 55% / 44% / 0.6% → 54% / 45% / 0.9%; retraining drops 0.089 / 0.061 → 0.085 / 0.064; grid group 0.289 / 0.015 → 0.279 / 0.017</td></tr>
+          <tr><td class="c">177, 181</td><td class="t">Tasks 34–35</td><td>Base value −1.088 → −1.092; threshold 0.739 (+1.04) → 0.747 (+1.08); Gasly score 0.111 → 0.127; Hamilton 0.914 → 0.915. LIME rank correlations 0.47 / 0.89 → 0.43 / 0.87</td></tr>
+          <tr><td class="c">188, 200</td><td class="t">Task 36</td><td>Test Brier 0.116 → 0.117. Threshold 0.739 = probability 0.397 → 0.747 = 0.407</td></tr>
+          <tr><td class="c">192</td><td class="t">Task 37</td><td>“24,575 rows of history” → 24,482; “about a second” → about half a second</td></tr>
+          <tr><td class="c">199</td><td class="t">Task 38</td><td>Norris 0.902 / 0.764 → 0.901 / 0.756; position only 0.872 / 0.683 → 0.876 / 0.688; no qualifying 0.864 / 0.663 → 0.866 / 0.664. 2024 season 0.692 → 0.690 → 0.694 → 0.692, 12 flips → 8. Strong teams at slot 19+: 4.1% of 293 → 4.2% of 288; slots 13–16 6.8% → 6.5%</td></tr>
+          <tr><td class="c">202</td><td class="t">Requirements table</td><td><b>“DEC-008; 64 surplus shared-drive rows removed” → DEC-034; 157 rows</b></td></tr>
+          <tr><td class="c">204</td><td class="t">Limitations</td><td><b>“Fifteen early races keep four or five podium rows” → false.</b> Add the network's 0.720 next to “0.709 against 0.711”. Validation-to-test loss 0.030–0.037 → 0.028–0.034 for the tree models, 0.013 for the network. Grid SHAP 41% → 40%</td></tr>
+          <tr><td class="c">206</td><td class="t">Run Check</td><td>Update the quoted values in <code>HEADLINE_NUMBERS</code> once the text is fixed</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+  </div>
+
+  <!-- ===================== PERSON A ===================== -->
+  <div class="panel" role="tabpanel" id="a" aria-labelledby="tab-a" style="--pc: var(--p-a)" hidden>
+    <div class="panel-head">
+      <h2>Person A: setup, audit and cleaning</h2>
+      <p class="meta">Cells 1–44 · Section 1 and Steps 1–2 · Tasks 1–8 · about 690 lines of code</p>
+    </div>
+
+    <section>
+      <h3>Cells you own</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Cells</th><th>Task</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td class="c">1–2</td><td class="t">Intro</td><td>Target, prediction time, team roles</td></tr>
+          <tr><td class="c">3</td><td class="t">1.1 Config</td><td>Seed 42, split years, Indy flag, <code>\N</code> sentinel, dataset folder search for Kaggle or local <code>archive/</code></td></tr>
+          <tr><td class="c">4</td><td class="t">1.2 Plot style</td><td>F1 palette and <code>save_fig()</code> at 300 dpi into <code>figures/</code> (DEC-007)</td></tr>
+          <tr><td class="c">5</td><td class="t">1.3 Leakage guard</td><td>Blacklist, regex patterns, what each table may contribute, <code>assert_leakage_safe()</code> with a self-test (DEC-004)</td></tr>
+          <tr><td class="c">6</td><td class="t">1.4 Data contract</td><td>Grain <code>(raceId, driverId)</code>, identifiers, <code>FEATURE_GROUPS</code>, <code>validate_data_contract()</code> (DEC-005)</td></tr>
+          <tr><td class="c">7–8</td><td class="t">1.5–1.6</td><td>Decision log table; <code>load_raw_datasets()</code></td></tr>
+          <tr><td class="c">9–13</td><td class="t">Task 1</td><td>Inventory of the 14 tables, dtypes, summary stats, key facts</td></tr>
+          <tr><td class="c">14–17</td><td class="t">Task 2</td><td>Primary keys, shared-drive duplicates, foreign keys by anti-join</td></tr>
+          <tr><td class="c">18–24</td><td class="t">Task 3</td><td>Six “before” EDA figures</td></tr>
+          <tr><td class="c">25–27</td><td class="t">Task 4</td><td>Typed copies: dates, lap times to seconds, checks</td></tr>
+          <tr><td class="c">28–31</td><td class="t">Task 5</td><td>Indy 500 (DEC-003), non-starters (DEC-009), pit-lane starts (DEC-010)</td></tr>
+          <tr><td class="c">32–33</td><td class="t">Task 6</td><td>Shared-drive removal (DEC-034)</td></tr>
+          <tr><td class="c">34–36</td><td class="t">Task 7</td><td>Base table <code>clean_df</code>, target, split profile</td></tr>
+          <tr><td class="c">37–43</td><td class="t">Task 8</td><td>“After” EDA and final type checks</td></tr>
+          <tr><td class="c">44</td><td class="t">Hand-off</td><td>Summary tables (contains stale numbers, see Everyone)</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section>
+      <h3>Numbers to know</h3>
+      <dl class="numbers">
+        <div><dt>Raw tables / rows</dt><dd>14 / 701,433</dd></div>
+        <div><dt>Raw results rows</dt><dd>26,759</dd></div>
+        <div><dt>Indy 500 removed</dt><dd>−405 (11 races)</dd></div>
+        <div><dt>Non-starters removed</dt><dd>−1,715</dd></div>
+        <div><dt>Shared drives removed</dt><dd>−157</dd></div>
+        <div><dt>Clean rows / races</dt><dd>24,482 / 1,114</dd></div>
+        <div><dt>Podium rate raw → clean</dt><dd>12.69% → 13.58%</dd></div>
+        <div><dt>Train rows (rate)</dt><dd>22,355 (13.44%)</dd></div>
+        <div><dt>Validation rows (rate)</dt><dd>775 (15.10%)</dd></div>
+        <div><dt>Test rows (rate)</dt><dd>1,352 (15.09%)</dd></div>
+        <div><dt>Primary keys / foreign keys checked</dt><dd>16 / 22, all clean</dd></div>
+        <div><dt>Pit-lane starts</dt><dd>72 (2015–2024)</dd></div>
+        <div><dt>Missing q2 / q3</dt><dd>44.3% / 65.4%</dd></div>
+        <div><dt>Qualifying starts / complete</dt><dd>1994 / 2003</dd></div>
+      </dl>
+    </section>
+
+    <section>
+      <div class="qa-bar"><h3>Expected questions</h3><div><span class="progress"></span> <button class="btn" data-toggle-all>Show all answers</button></div></div>
+      <ol class="qa">
+        <li><details><summary>Why is the target built from <code>positionOrder</code> and not <code>position</code>?</summary><div class="ans">
+          <p><code>position</code> is empty for every driver who was not classified (36.8% of clean rows). <code>positionOrder</code> gives every row a finishing order, so the target is defined for all rows. Both are blacklisted as features.</p>
+          <p class="where">Cell 1 · Task 8.6 shows the missing share</p></div></details></li>
+        <li><details><summary>How does the leakage guard work, and what can it not catch?</summary><div class="ans">
+          <p><code>assert_leakage_safe()</code> raises a <code>ValueError</code> if a column is in <code>LEAKAGE_BLACKLIST_COLUMNS</code> (outcomes such as <code>positionOrder</code>, <code>points</code>, <code>laps</code>, <code>milliseconds</code>, <code>statusId</code>, post-race standings) or matches a pattern such as <code>^fastest</code>, <code>^post_</code>, <code>current</code>. A self-test at load time checks that five forbidden names are rejected.</p>
+          <p>It only checks names. A feature with an innocent name computed from current-race data would pass, which is why Step 4 adds behavioural leakage tests (Person B).</p>
+          <p class="where">Cell 5 · DEC-004</p></div></details></li>
+        <li><details><summary>What is the data contract, and where is it enforced?</summary><div class="ans">
+          <p>One row per <code>(raceId, driverId)</code>; <code>raceId</code>, <code>driverId</code>, <code>constructorId</code>, <code>date</code>, <code>year</code> never null; <code>podium</code> only 0 or 1; every feature passes the leakage guard. <code>validate_data_contract()</code> checks the grain after shared-drive removal (Task 6), the full contract on <code>clean_df</code> (Task 7.1) and on <code>model_df</code> (Task 12.8).</p>
+          <p class="where">Cell 6 · DEC-005</p></div></details></li>
+        <li><details><summary>How are missing values encoded in the raw files, and how do you know none survived?</summary><div class="ans">
+          <p>The CSVs write a missing value as the text <code>\N</code>. The loader reads <code>\N</code> and empty strings as NaN (<code>na_values</code>). Task 4.2 asserts no cleaned table still contains <code>\N</code> as text, and that parsing lap times lost no value that was present.</p>
+          <p class="where">Cells 3, 8, 27</p></div></details></li>
+        <li><details><summary>Why does all cleaning work on copies?</summary><div class="ans">
+          <p>So the raw tables stay available for the before/after EDA. Task 4.2 and Task 8.6 assert that the raw tables were not changed (raw <code>races.date</code> is still text, raw <code>results</code> has no <code>pit_start</code>).</p>
+          <p class="where">Cells 26–27, 43</p></div></details></li>
+        <li><details><summary>Which integrity checks did the audit run, and what did they find?</summary><div class="ans">
+          <ul>
+            <li>16 primary keys, including composite ones such as <code>(raceId, driverId, lap)</code> for <code>lap_times</code>: all unique and non-null.</li>
+            <li>22 foreign keys, checked by an anti-join (child keys not found in the parent): zero orphans.</li>
+            <li>One violation: <code>results</code> is not unique on <code>(raceId, driverId)</code>. 176 rows in 85 pairs, 91 surplus rows, almost all in 1950–1964. These are shared drives.</li>
+          </ul>
+          <p class="where">Task 2, cells 15–17</p></div></details></li>
+        <li><details><summary>What does qualifying coverage look like, and why does it matter later?</summary><div class="ans">
+          <p><code>qualifying.csv</code> starts in 1994. From 1996 to 2002 it covers only 6–59% of the results rows; it is complete from 2003. Within the file, q2 is missing in 44% of rows and q3 in 65%, because the knockout format (2006 on) eliminates drivers before those sessions.</p>
+          <p>Consequence: qualifying features are missing in about 63% of training rows, so they need a missing flag, and Step 5 fills <code>quali_position</code> from the grid.</p>
+          <p class="where">Tasks 1.4, 3.4, 8.5</p></div></details></li>
+        <li><details><summary>Why keep missing q2/q3 times instead of filling them?</summary><div class="ans">
+          <p>A driver knocked out in Q1 has no Q2 time by design. Filling it would invent a lap. The gap itself is information: it later becomes <code>q3_reached</code>.</p>
+          <p class="where">Task 4 intro, cell 25</p></div></details></li>
+        <li><details><summary>Why exclude the Indianapolis 500 (DEC-003)?</summary><div class="ans">
+          <p>From 1950 to 1960 it counted for the championship, but it was run under AAA/USAC rules on an oval, with a separate field that almost never raced in F1. Keeping it would distort front-row conversion and driver form. 11 races and 405 rows are removed; the cell asserts exactly one Indy 500 per season.</p>
+          <p class="where">Task 5.1, cell 29</p></div></details></li>
+        <li><details><summary>Explain the non-starter rule (DEC-009). Why not drop every row labelled “did not qualify”?</summary><div class="ans">
+          <p>A row is removed when the driver completed <b>zero laps</b> and either carries a non-start label (<code>F</code>, <code>W</code>, Did not qualify, Did not prequalify, Withdrew) or never held a grid slot (<code>grid == 0</code>).</p>
+          <p>The label alone is not reliable: 24 of the 1,724 labelled rows completed racing laps, and 173 held a grid slot. The cell asserts that no removed row finished on the podium. 1,715 rows removed.</p>
+          <p class="where">Task 5.2, cell 30</p></div></details></li>
+        <li><details><summary>What is a pit-lane start, and how is it encoded (DEC-010)?</summary><div class="ans">
+          <p>After DEC-009, every remaining <code>grid == 0</code> row completed laps (asserted), so it is a real pit-lane start. Left as 0, a model would read it as better than pole. So <code>grid</code> becomes the race's last grid slot + 1 and <code>pit_start = 1</code>. 72 rows, 2015–2024, none reached the podium.</p>
+          <p class="where">Task 5.3, cell 31</p></div></details></li>
+        <li><details><summary>What is a shared drive, and how was it resolved (DEC-034)?</summary><div class="ans">
+          <p>Until the mid-1960s a driver could take over a teammate's car mid-race. Ergast lists that car under both drivers with the same grid slot and classification. The slot belongs to whoever started the car and the result to whoever finished it, and the data does not say which is which. Pairing one driver's pre-race data with another's result is leakage (instructor ruling on Piazza).</p>
+          <ul>
+            <li>A car is <code>(raceId, constructorId, grid, positionOrder)</code>. Listed under two drivers, it was shared.</li>
+            <li>Every row of a shared car is removed. A driver who also drove a car of their own keeps that row (43 of 135). A driver left with two cars of their own is removed (1).</li>
+            <li>Same slot but different classification means two different cars (a data-entry collision, 29 rows) and is kept.</li>
+            <li>155 shared-car rows in 40 races (1950–1964); 157 rows removed in total. Assertion: no shared car survives.</li>
+          </ul>
+          <p class="where">Task 6, cells 32–33</p></div></details></li>
+        <li><details><summary>Why was the old shared-drive rule (DEC-008) dropped?</summary><div class="ans">
+          <p>DEC-008 kept each driver's best-classified row. 59 of the 61 rows it kept were shared cars, so it kept exactly the pairing ruled to be leakage. Example shown in the cell: the 1957 British GP, where Moss and Brooks are both listed with grid 3 and the win.</p>
+          <p class="where">Task 6 · decision log DEC-034</p></div></details></li>
+        <li><details><summary>Why is <code>field_size</code> computed before the shared rows are removed?</summary><div class="ans">
+          <p>It should count every driver who took the start. Counting after removal would undercount starters in the races that had shared cars.</p>
+          <p class="where">Task 6, cell 33</p></div></details></li>
+        <li><details><summary>Some races have fewer than three podium rows after cleaning. Is that a bug?</summary><div class="ans">
+          <p>No. When a podium car was shared, its rows are removed: 13 races keep two podium rows and 2 keep one; 1,099 races have three. The assertion is that no race has more than three.</p>
+          <p class="where">Task 7.2, cell 36</p></div></details></li>
+        <li><details><summary>Why rename <code>qualifying.position</code> and prefix the sprint columns?</summary><div class="ans">
+          <p>Both tables reuse names of the results outcome columns. Renaming to <code>quali_position</code> and <code>sprint_*</code> avoids merge collisions, and keeps the guard (which blacklists <code>position</code>) from rejecting a legitimate pre-race feature.</p>
+          <p class="where">Task 7.1, cell 35</p></div></details></li>
+        <li><details><summary>Walk through the row counts and the podium rate across cleaning.</summary><div class="ans">
+          <p>26,759 raw → 26,354 after Indy (−405) → 24,639 after non-starters (−1,715) → 24,482 after shared drives (−157). The podium rate rises from 12.69% to 13.58% because non-starters (never on the podium) are gone. It stays under 15% because older races had more than 20 starters; validation and test, with 20-car grids, are at 15.1%.</p>
+          <p class="where">Tasks 7.2, 8.1</p></div></details></li>
+        <li><details><summary>Why does <code>clean_df</code> still contain outcome columns?</summary><div class="ans">
+          <p>The Step 3 questions measure outcomes (podium, retirement status), so they need them. The columns stay blacklisted, and Step 4 selects only identifiers, the target and pre-race columns.</p>
+          <p class="where">Task 7 intro</p></div></details></li>
+        <li><details><summary>What stands out about 1989 in the EDA?</summary><div class="ans">
+          <p>It is the largest season in the raw data (620 rows) and has the lowest raw podium rate (7.74%), because pre-qualifying produced many non-starters. After cleaning, its rate rises the most of any season (+3.82 points). The largest field drops from 55 entries to 34 starters.</p>
+          <p class="where">Tasks 3.2, 3.5, 8.2, 8.4</p></div></details></li>
+      </ol>
+    </section>
+  </div>
+
+  <!-- ===================== PERSON B ===================== -->
+  <div class="panel" role="tabpanel" id="b" aria-labelledby="tab-b" style="--pc: var(--p-b)" hidden>
+    <div class="panel-head">
+      <h2>Person B: data-engineering questions and features</h2>
+      <p class="meta">Cells 45–87 · Steps 3–4 · Tasks 9–14 · about 690 lines of code</p>
+    </div>
+
+    <section>
+      <h3>Cells you own</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Cells</th><th>Task</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td class="c">45–46</td><td class="t">Helpers</td><td><code>rate_table()</code>: rate per group with a Wilson 95% interval</td></tr>
+          <tr><td class="c">47–51</td><td class="t">Task 9 · Q1</td><td>Front-row conversion by circuit, pre-hybrid vs. hybrid era (DEC-035)</td></tr>
+          <tr><td class="c">52–57</td><td class="t">Task 10 · Q2</td><td>Home advantage with grid held fixed: CMH test and logistic regressions (DEC-012)</td></tr>
+          <tr><td class="c">58–64</td><td class="t">Task 11 · Q3</td><td>Mechanical retirements by constructor and era (DEC-036, DEC-014)</td></tr>
+          <tr><td class="c">65–72</td><td class="t">Task 12.1–12.6</td><td>One function per feature group: grid, qualifying, driver/constructor form, standings, context</td></tr>
+          <tr><td class="c">73–76</td><td class="t">Task 12.7–12.9</td><td>Sprint left out (DEC-016), <code>build_feature_table()</code>, feature registry</td></tr>
+          <tr><td class="c">77–79</td><td class="t">Task 13</td><td>Leakage tests: brute-force recomputation and corruption test</td></tr>
+          <tr><td class="c">80–86</td><td class="t">Task 14</td><td>Feature validation on training seasons: missingness, correlation, single-feature AUC, window size</td></tr>
+          <tr><td class="c">87</td><td class="t">Hand-off</td><td>Summary (says 24,575 rows; the real count is 24,482)</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section>
+      <h3>Numbers to know</h3>
+      <dl class="numbers">
+        <div><dt>Q1 conversion 1950–2013 → 2014–2024</dt><dd>56.3% → 76.2%</dd></div>
+        <div><dt>Q1 circuits ranked / Spearman ρ</dt><dd>16 / −0.08</dd></div>
+        <div><dt>Q1 top since 2014</dt><dd>Monaco 89.5%</dd></div>
+        <div><dt>Q2 home starts</dt><dd>1,902 (7.8%)</dd></div>
+        <div><dt>Q2 CMH odds ratio (p)</dt><dd>0.91 (0.31)</dd></div>
+        <div><dt>Q3 mech. rate, field</dt><dd>9.77% → 5.92%</dd></div>
+        <div><dt>Q3 worst 2014–2021</dt><dd>Lotus F1 20.0%</dd></div>
+        <div><dt>Q3 worst 2022–2024</dt><dd>Alfa Romeo 12.5%</dd></div>
+        <div><dt>Features / groups</dt><dd>21 / 6</dd></div>
+        <div><dt>Leakage tests</dt><dd>300 rows · 20 races</dd></div>
+        <div><dt>ROC-AUC alone: grid</dt><dd>0.884</dd></div>
+        <div><dt>Spearman grid vs. quali_position</dt><dd>0.98</dd></div>
+      </dl>
+    </section>
+
+    <section>
+      <div class="qa-bar"><h3>Expected questions</h3><div><span class="progress"></span> <button class="btn" data-toggle-all>Show all answers</button></div></div>
+      <ol class="qa">
+        <li><details><summary>Q1: how is a front-row start defined, and why the grid and not qualifying (DEC-035)?</summary><div class="ans">
+          <p>Grid slot 1 or 2, excluding pit-lane starts. The question is about the starting grid, and the instructors confirmed on Piazza that the note on qualifying only explains that penalties make the two differ. Using the grid also lets Q1 use every season, since qualifying data starts in 1994.</p>
+          <p class="where">Task 9.1 · DEC-035 replaces DEC-011</p></div></details></li>
+        <li><details><summary>Q1: what is the answer?</summary><div class="ans">
+          <ul>
+            <li>Conversion rose from 56.3% (991 of 1,759) in 1950–2013 to 76.2% (345 of 453) in 2014–2024. It rose at 14 of 16 ranked circuits.</li>
+            <li>Top since 2014: Monaco 89.5%, Suzuka 88.9%, Yas Marina 86.4%. Last: Hungaroring 59.1%.</li>
+            <li>The ranking is not preserved: Spearman ρ = −0.08 (p = 0.76). Monaco goes from 15th to 1st, the Hungaroring from 2nd to 16th.</li>
+          </ul>
+          <p class="where">Tasks 9.2–9.3, Q1 answer cell 51</p></div></details></li>
+        <li><details><summary>Q1: why the minimum of 10 front-row starts per era, and how much can you trust single ranks?</summary><div class="ans">
+          <p>With fewer starts, one race moves a rate by 10 points or more. Even with the filter, hybrid-era circuits have 14–26 front-row starts, so one race moves a rate by 4–7 points. The overall rise is solid; most individual rank changes are within that noise.</p>
+          <p class="where">Task 9.2</p></div></details></li>
+        <li><details><summary>Q1: what does the sensitivity check with 2003–2013 show?</summary><div class="ans">
+          <p>1950–2013 mixes very different cars, and long-used circuits (Monza 127 front-row starts, Monaco 119) are dominated by old decades. With a pre-hybrid window as long as the hybrid era, the rise is smaller (67.0% → 76.2%) and the ranking is loosely kept (ρ = 0.36, 14 circuits). Same answer: the hybrid era converts more often and reorders the circuits.</p>
+          <p class="where">Task 9.2</p></div></details></li>
+        <li><details><summary>Why Wilson intervals, and why Spearman rather than Pearson?</summary><div class="ans">
+          <p>Wilson intervals stay inside 0–100% and behave well with small counts and rates near the edges, where the usual normal (Wald) interval breaks. Spearman compares ranks, which is what “does the ranking change” asks, and does not assume a linear relation.</p>
+          <p class="where">Cell 46, Task 9.2</p></div></details></li>
+        <li><details><summary>Q2: how is a home race defined (DEC-012), and which edge cases did you handle?</summary><div class="ans">
+          <p>A race is a home race when <code>circuits.country</code> is one of the countries mapped from <code>drivers.nationality</code>.</p>
+          <ul>
+            <li>Names follow the circuits table: British → UK, American → USA; “United States” folded into USA.</li>
+            <li>Monegasque → Monaco, East German → Germany. Dual nationalities (American-Italian) have two home countries.</li>
+            <li>“Argentinian ” has a trailing space in the raw table and is stripped.</li>
+            <li>14 nationalities (Finnish among them) have no circuit, so their drivers are always away. Every nationality is mapped (asserted).</li>
+          </ul>
+          <p class="where">Task 10.1</p></div></details></li>
+        <li><details><summary>Q2: the raw home podium rate is lower than away. Why is that not a home disadvantage?</summary><div class="ans">
+          <p>Grid position confounds it. Home starts come from the first three slots less often (11.9% vs. 13.7%), and the raw rates are 11.57% at home vs. 13.75% away. Comparing within grid buckets (1, 2–3, 4–6, 7–10, 11+) removes that, and the differences then go both ways with overlapping intervals.</p>
+          <p class="where">Task 10.2</p></div></details></li>
+        <li><details><summary>Q2: which tests did you run and what do they say?</summary><div class="ans">
+          <ul>
+            <li>Cochran–Mantel–Haenszel over the 5 grid buckets: pooled odds ratio 0.91 (95% CI 0.76–1.08), p = 0.31.</li>
+            <li>Logistic regression <code>podium ~ is_home + C(grid_bucket)</code>, errors clustered by driver: 0.91 (0.75–1.11), p = 0.35.</li>
+            <li>Robustness: exact grid slot 0.92, only drivers who ever had a home race 0.90, season decade added 0.91.</li>
+            <li>Breslow–Day p = 0.32: no sign the odds ratio differs between buckets.</li>
+          </ul>
+          <p>Answer: no detectable home advantage once grid is held fixed.</p>
+          <p class="where">Task 10.3. The Q2 answer cell still quotes older numbers (0.95, p = 0.61); fix it.</p></div></details></li>
+        <li><details><summary>Q2: why cluster the standard errors by driver, and what does conditioning on grid hide?</summary><div class="ans">
+          <p>The same driver appears in many rows, so rows are not independent; clustering stops the test from being overconfident. Conditioning on grid removes any home effect that works through qualifying (a driver qualifying better at home). That is intended, because the question compares drivers who started from similar positions.</p>
+          <p class="where">Task 10.3 and the Q2 answer</p></div></details></li>
+        <li><details><summary>Q3: how are the 139 status labels categorised (DEC-036)?</summary><div class="ans">
+          <p>Four categories: finished (34), mechanical (74), accident/driver (12), regulatory/other (19). Mechanical means the label names a failed car component or system. Instructor ruling on Piazza: Puncture, Tyre, Tyre puncture, Fire and Safety belt are mechanical; Refuelling is not. Out of fuel, Fuel and Fuel rig stay with Refuelling. Assertions: every label mapped, no label in two sets, the ruling respected.</p>
+          <p class="where">Task 11.1 · DEC-036 replaces DEC-013</p></div></details></li>
+        <li><details><summary>Q3: how is the rate defined, and what is the answer?</summary><div class="ans">
+          <p>Mechanical retirements divided by race starts, per constructor and era, for constructors with at least 40 starts in the era (about one season of a two-car team).</p>
+          <ul>
+            <li>2014–2021: Lotus F1 20.0% (15 of 75), Toro Rosso 16.5%, Renault 14.1%.</li>
+            <li>2022–2024: Alfa Romeo 12.5% (11 of 88), Alpine 10.4%, AlphaTauri 8.0%.</li>
+            <li>Field-wide, mechanical retirements fell from 9.77% to 5.92% of starts. Caterham and Marussia are dropped (under 40 starts).</li>
+          </ul>
+          <p class="where">Tasks 11.2–11.3</p></div></details></li>
+        <li><details><summary>Q3: how did you handle renamed teams, and is the ranking stable between eras?</summary><div class="ans">
+          <p>DEC-014 merges lineages (Toro Rosso / AlphaTauri / RB, Force India / Racing Point / Aston Martin, Lotus F1 / Renault / Alpine, Sauber / Alfa Romeo). Lotus / Renault / Alpine is the least reliable in both eras; McLaren improved most (13.6% → 3.7%). The ordering is not stable: Spearman ρ = 0.24 (p = 0.51). Counting the generic “Retired” label as mechanical barely moves 2014–2021 (ρ = 0.97) but reshuffles the middle of 2022–2024 (ρ = 0.66).</p>
+          <p class="where">Tasks 11.4–11.5</p></div></details></li>
+        <li><details><summary>What two rules does every feature follow?</summary><div class="ans">
+          <ul>
+            <li><b>Nothing from the current race.</b> Outcomes enter only through aggregates of earlier races: rows sorted by date and shifted by one race before any rolling or expanding window.</li>
+            <li><b>Missing stays missing.</b> No imputation in Step 4. That is a preprocessing choice, fitted on training rows only, in Step 5.</li>
+          </ul>
+          <p class="where">Step 4 intro, cell 65</p></div></details></li>
+        <li><details><summary>How do you guarantee that <code>shift(1)</code> means “strictly earlier”?</summary><div class="ans">
+          <p>Rows are sorted by date, and two assertions hold: no two races share a date, and no driver has two rows on one date. Then shifting by one within a driver removes exactly the current race, never a same-day race.</p>
+          <p class="where">Task 12.1</p></div></details></li>
+        <li><details><summary>How are the standings features built without leaking the current race?</summary><div class="ans">
+          <p>Ergast stores standings as they stood <em>after</em> each race. The table for round r − 1 is therefore the pre-race state of round r: the code adds 1 to <code>round</code> and merges on season, round and driver (or constructor). It asserts the standings date is before the race date. In round 1, or a driver's first race of a season, points share is 0 and rank is missing.</p>
+          <p class="where">Task 12.5</p></div></details></li>
+        <li><details><summary>Why are points features expressed as shares (DEC-015)?</summary><div class="ans">
+          <p>A win was worth 8–10 points until 2009 and 25 from 2010. Raw points would mean something different in training than in validation and test. So constructor form is a share of all points awarded in its last 5 races, and standings points are a share of the championship leader's points.</p>
+          <p class="where">Tasks 12.4–12.5</p></div></details></li>
+        <li><details><summary>Why are there no sprint features (DEC-016)?</summary><div class="ans">
+          <p>The first sprint was in 2021. The training seasons (up to 2019) contain no sprint rows at all (validation 57, test 283), and a model cannot learn from a column that is empty in everything it trains on. The sprint group is removed, leaving 21 features in 6 groups.</p>
+          <p class="where">Task 12.7</p></div></details></li>
+        <li><details><summary>Explain <code>gap_to_pole</code>, <code>q3_reached</code> and <code>teammate_grid_diff</code>.</summary><div class="ans">
+          <ul>
+            <li><code>gap_to_pole</code>: best of Q1–Q3 divided by the fastest time in that race, minus 1, in %. Above 100% is a recording error and set to missing (one row, 1995 Japanese GP, 1,002.64 s). DEC-017.</li>
+            <li><code>q3_reached</code>: 1 if a Q3 time was set, defined only for races that had a Q3 session (from 2006); missing otherwise, not 0.</li>
+            <li><code>teammate_grid_diff</code>: grid minus the mean grid of the same constructor's other cars in that race; negative means ahead; missing for a one-car entry.</li>
+          </ul>
+          <p class="where">Tasks 12.2–12.3</p></div></details></li>
+        <li><details><summary>What does <code>circuit_historical_podium_rate</code> measure, and why per driver (DEC-018)?</summary><div class="ans">
+          <p>The driver's own podium rate in earlier races at this circuit. Averaged across all drivers, a circuit's podium rate is just 3 divided by the field size, so it would add nothing. It is missing on a driver's first visit (31% of training rows).</p>
+          <p class="where">Task 12.4</p></div></details></li>
+        <li><details><summary>How did you prove the features do not leak? Walk through both tests.</summary><div class="ans">
+          <ul>
+            <li><b>Brute force:</b> for 300 random rows, the 6 history features are recomputed with slow, obvious code that only sees rows with <code>date &lt; date_t</code>. All match <code>model_df</code>.</li>
+            <li><b>Corruption:</b> for 20 random races, every outcome from that race onward is replaced by garbage (finishing order shuffled, +100 points, podium flipped, later standings altered) and the whole table is rebuilt. All 21 features of that race come out identical.</li>
+            <li><b>Control:</b> a rolling rate computed <em>without</em> <code>shift(1)</code> is caught in 20 of 20 races, so the test can actually detect leakage.</li>
+          </ul>
+          <p class="where">Task 13</p></div></details></li>
+        <li><details><summary>Which features are strongest on their own, and which overlap?</summary><div class="ans">
+          <p>On training seasons only. ROC-AUC used alone: <code>quali_position</code> 0.905 and <code>gap_to_pole</code> 0.887, but only on the 37% of rows where they exist; <code>grid</code> 0.884 on every row; form and standings 0.79–0.84. <code>pit_start</code>, <code>is_home_race</code>, <code>round</code> and <code>missing_quali_flag</code> are about 0.50. Overlaps: <code>grid</code> vs. <code>quali_position</code> ρ = 0.98; rank vs. points within each standings table ρ = −0.92.</p>
+          <p class="where">Tasks 14.3–14.5</p></div></details></li>
+        <li><details><summary>Why a 5-race rolling window?</summary><div class="ans">
+          <p>The three driver-form features together, in a logistic regression on training seasons: ROC-AUC 0.836 with 3 races, 0.843 with 5, 0.846 with 10. Ten alone scores higher for the rolling rate, but with the career rate alongside, 10 adds almost nothing over 5, and 5 reacts faster to a change of form.</p>
+          <p class="where">Task 14.6</p></div></details></li>
+        <li><details><summary>Why does every feature-vs-target view use the training seasons only?</summary><div class="ans">
+          <p>So that no choice about the features is informed by the validation or test seasons. Otherwise their scores would no longer be honest.</p>
+          <p class="where">Task 14 intro</p></div></details></li>
+      </ol>
+    </section>
+  </div>
+
+  <!-- ===================== PERSON C ===================== -->
+  <div class="panel" role="tabpanel" id="c" aria-labelledby="tab-c" style="--pc: var(--p-c)" hidden>
+    <div class="panel-head">
+      <h2>Person C: split, preprocessing and models</h2>
+      <p class="meta">Cells 88–148 · Steps 5–6 · Tasks 15–28 · about 630 lines of code</p>
+    </div>
+
+    <section>
+      <h3>Cells you own</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Cells</th><th>Task</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td class="c">88–92</td><td class="t">Task 15</td><td>Season split (DEC-002); why identifiers are not one-hot encoded (DEC-020)</td></tr>
+          <tr><td class="c">93–95</td><td class="t">Task 16</td><td><code>make_preprocessor()</code>, the reference logistic regression, race-bootstrap scoring</td></tr>
+          <tr><td class="c">96–99</td><td class="t">Task 17</td><td>Training-window and qualifying-imputation experiment (DEC-019)</td></tr>
+          <tr><td class="c">100–103</td><td class="t">Task 18</td><td>Distributions before and after each transformation; shift of validation and test</td></tr>
+          <tr><td class="c">104–110</td><td class="t">Task 19</td><td>Two order experiments: fit on train vs. all rows; impute → scale vs. scale → impute</td></tr>
+          <tr><td class="c">111–113</td><td class="t">Task 20</td><td>Final matrices <code>X_*_prep</code>; hand-off</td></tr>
+          <tr><td class="c">114–117</td><td class="t">Task 21</td><td>Metrics, <code>best_f1_threshold()</code>, <code>top3_per_race()</code>, <code>compare_models()</code>, seed-averaged <code>random_search()</code> (DEC-022, DEC-037)</td></tr>
+          <tr><td class="c">118–121</td><td class="t">Task 22</td><td>Baselines: grid ≤ 3 rule (DEC-023) and logistic regression</td></tr>
+          <tr><td class="c">122–124</td><td class="t">Task 23</td><td>Random forest, untuned and searched (20 configs × 5 seeds)</td></tr>
+          <tr><td class="c">125–128</td><td class="t">Task 24</td><td>LightGBM on raw features (DEC-024), 40 configs × 5 seeds</td></tr>
+          <tr><td class="c">129–133</td><td class="t">Task 25</td><td>Keras network, 8 architectures × 5 seeds, training history (DEC-026)</td></tr>
+          <tr><td class="c">134–136</td><td class="t">Task 26</td><td>With vs. without class weights (DEC-027)</td></tr>
+          <tr><td class="c">137–141</td><td class="t">Task 27</td><td>Thresholds tuned for F1, top 3 per race, model choice (DEC-028, DEC-029)</td></tr>
+          <tr><td class="c">142–148</td><td class="t">Task 28</td><td>The one scoring of the test seasons; PR curves; confusion matrices; hand-off (DEC-030)</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section>
+      <h3>Numbers to know</h3>
+      <dl class="numbers">
+        <div><dt>Test rows with an unseen driver</dt><dd>21.9%</dd></div>
+        <div><dt>Train rows without qualifying</dt><dd>62.9%</dd></div>
+        <div><dt>field_size shift (val / test)</dt><dd>−0.95 SD</dd></div>
+        <div><dt>Order experiments, PR-AUC Δ</dt><dd>−0.0001 each</dd></div>
+        <div><dt>Class weights (no / yes podium)</dt><dd>0.578 / 3.721</dd></div>
+        <div><dt>Grid rule val / test PR-AUC</dt><dd>0.648 / 0.647</dd></div>
+        <div><dt>Logistic regression</dt><dd>0.726 / 0.712</dd></div>
+        <div><dt>Random forest</dt><dd>0.735 / 0.707</dd></div>
+        <div><dt>LightGBM (selected)</dt><dd>0.743 / 0.709</dd></div>
+        <div><dt>Neural network</dt><dd>0.733 / 0.720</dd></div>
+        <div><dt>LightGBM threshold</dt><dd>0.747</dd></div>
+        <div><dt>LightGBM test F1 / P / R</dt><dd>0.684 / 0.616 / 0.770</dd></div>
+      </dl>
+    </section>
+
+    <section>
+      <div class="qa-bar"><h3>Expected questions</h3><div><span class="progress"></span> <button class="btn" data-toggle-all>Show all answers</button></div></div>
+      <ol class="qa">
+        <li><details><summary>Why are <code>driverId</code> and <code>constructorId</code> not one-hot encoded (DEC-020)?</summary><div class="ans">
+          <p>Many held-out rows belong to someone the model never saw: 13.7% of validation and 21.9% of test rows have a driver absent from training (15.6% and 20.0% for constructors). Their one-hot columns would be all zeros. Form, standings and circuit-history features describe the same thing in a way that also works for a newcomer. Every feature is already numeric or 0/1, so no encoder is needed.</p>
+          <p class="where">Task 15.2</p></div></details></li>
+        <li><details><summary>Describe the preprocessing pipeline.</summary><div class="ans">
+          <ul>
+            <li>Qualifying fallback: where <code>quali_position</code> is missing, use the grid slot (a <code>FunctionTransformer</code>).</li>
+            <li>16 continuous features: median imputation, then standard scaling.</li>
+            <li>5 binary flags: a missing flag is filled with 0; flags are not scaled.</li>
+          </ul>
+          <p>Built with <code>ColumnTransformer</code> inside a <code>Pipeline</code>, always fitted on training rows only. It is used by logistic regression, the forest and the network; LightGBM takes the raw features.</p>
+          <p class="where">Task 16.1 · DEC-020</p></div></details></li>
+        <li><details><summary>Is filling <code>quali_position</code> from the grid a form of leakage?</summary><div class="ans">
+          <p>No. It works row by row and learns nothing from other rows, so it can be applied to any split. The grid slot is itself known before the race. Before 2003, qualifying position and grid agree in 98% of the rows that have both, so the filled values are sensible.</p>
+          <p class="where">Tasks 16.1, 17</p></div></details></li>
+        <li><details><summary>Why are confidence intervals computed by resampling whole races?</summary><div class="ans">
+          <p>Rows in a race are not independent: exactly three of them are podiums. Resampling single rows would treat them as independent and make the intervals too narrow. Resampling the 39 validation races (or 68 test races) 500 times, with the same resamples for every model, gives honest intervals for each PR-AUC and for the difference between two models.</p>
+          <p class="where">Tasks 16.2, 21.2</p></div></details></li>
+        <li><details><summary>What did the training-window experiment decide (DEC-019)?</summary><div class="ans">
+          <p>Train on all seasons, with the grid fallback. For logistic regression the window barely matters (validation PR-AUC 0.727 on all seasons, 0.719 from 1994, 0.725 from 2003, 0.729 from 2006), all inside the noise of 39 races. Median imputation vs. grid fallback makes no difference (0.7269 vs. 0.7262). Gradient boosting gets worse with less data (0.713 on all seasons, 0.665 from 2006). So no rows are dropped.</p>
+          <p class="where">Task 17</p></div></details></li>
+        <li><details><summary>Experiment 1: what happens if the preprocessor is fitted on all rows?</summary><div class="ans">
+          <p>That is leakage, but here it changes nothing measurable (PR-AUC Δ −0.0001). Validation and test are only 8.7% of the rows, so medians barely move and standard deviations shift 1–2% (7% for <code>gap_to_pole</code>); a linear model absorbs that. The pipeline is still fitted on training rows only: it costs nothing, keeps scores honest by construction, and the same shortcut would matter far more for something that looks at the target, such as target encoding.</p>
+          <p class="where">Task 19.1</p></div></details></li>
+        <li><details><summary>Experiment 2: impute then scale, or scale then impute?</summary><div class="ans">
+          <p>The score does not change (Δ −0.0001), but the transformed values do. With imputation first, the scaler sees many copies of the median and learns a smaller standard deviation: 1.58 instead of 2.57 for <code>gap_to_pole</code> (64% missing), so its real values end up about 63% further from zero. Logistic regression compensates with a smaller coefficient. Impute → scale is kept: it is conventional and guarantees mean 0 and SD 1 on training.</p>
+          <p class="where">Task 19.2</p></div></details></li>
+        <li><details><summary>How do validation and test differ from training after preprocessing?</summary><div class="ans">
+          <p>Modern grids stop at 20 cars, so <code>field_size</code> sits 0.95 training SDs below the training mean, and grid and rank features have no long tail. <code>round</code> is 0.4–0.7 SD above, because seasons now have more races. This shift is real and is the reason validation uses recent seasons.</p>
+          <p class="where">Task 18</p></div></details></li>
+        <li><details><summary>How can the grid ≤ 3 rule have a PR-AUC, and what is the bar it sets?</summary><div class="ans">
+          <p>Its score is minus the grid slot, so pole ranks first and PR-AUC can be computed; the yes/no rule is a cut at slot 3. It reaches 0.648 on validation (F1 0.695) and 0.647 on test. Logistic regression with all 21 features reaches 0.726, so the other 20 features add about 0.08 on validation. Sweeping <code>C</code> from 0.01 to 100 changes nothing.</p>
+          <p class="where">Task 22 · DEC-023</p></div></details></li>
+        <li><details><summary>Why is every model's training score lower than its validation score? Isn't that suspicious?</summary><div class="ans">
+          <p>The training seasons (1950–2019) are harder: larger, more variable fields, a lower podium rate (13.4% vs. 15.1%), and mostly no qualifying data. So a training score below validation is expected. Overfitting would show as a training score far above validation, as with the untuned forest (1.000 vs. 0.685).</p>
+          <p class="where">Task 22 result, Task 23</p></div></details></li>
+        <li><details><summary>What did tuning do to the random forest?</summary><div class="ans">
+          <p>The untuned forest grows full trees and overfits (training PR-AUC 1.000, validation 0.685). The search over depth, leaf size and features per split picks very shallow trees: <code>max_depth = 4</code>, <code>min_samples_leaf = 5</code>, <code>max_features = 0.8</code>, validation 0.735. Across the 20 configurations the mean validation PR-AUC ranges from 0.668 to 0.738: the search matters more than the model type.</p>
+          <p class="where">Task 23</p></div></details></li>
+        <li><details><summary>Why LightGBM, and how is it configured (DEC-024)?</summary><div class="ans">
+          <p>It reads missing values natively (each split learns a branch for them), does not depend on feature scale, and is supported by SHAP's exact <code>TreeExplainer</code>. It is fitted on raw features with balanced class weights and <code>n_jobs = 1</code> so a run gives the same trees on any machine. Chosen configuration: 100 trees of 8 leaves, learning rate 0.03, 70% of features per tree; validation 0.743 (untuned 0.702). Feeding it imputed and scaled features instead makes no difference (−0.004, interval includes zero).</p>
+          <p class="where">Task 24</p></div></details></li>
+        <li><details><summary>Why is every configuration scored on five seeds (DEC-037)?</summary><div class="ans">
+          <p>Near the top of a search, configurations differ by less than the seed-to-seed noise, so a single-seed search picks whichever got a lucky seed. After DEC-034 removed 157 rows, a single-seed search switched LightGBM to a configuration that scored 0.746 on seed 42 but averaged 0.732, against 0.742 for the one it replaced. Ranking by the mean over seeds 42, 0, 1, 2, 3 fixes that; the final model is then fitted once with seed 42.</p>
+          <p class="where">Tasks 21, 23–25 · decision log DEC-037</p></div></details></li>
+        <li><details><summary>Describe the neural network and how it was chosen (DEC-026).</summary><div class="ans">
+          <p>A Keras feed-forward network on the 21 preprocessed features: ReLU hidden layers with dropout, one sigmoid output, binary cross-entropy with balanced class weights (a podium row counts 6.4 times as much), Adam at 0.001, batch 256. Early stopping on validation PR-AUC with patience 10, keeping the best epoch. Eight architectures (32, 64, 32→16, 64→32; dropout 0.2 or 0.4) × 5 seeds; chosen 64 → 32 with dropout 0.2, validation 0.733. The seed moves the score as much as the architecture (0.726–0.738).</p>
+          <p class="where">Task 25</p></div></details></li>
+        <li><details><summary>The network stops on validation PR-AUC. Doesn't that use validation for training?</summary><div class="ans">
+          <p>It uses validation to choose one number, the stopping epoch, in the same way validation chooses hyperparameters for the other models. It makes the network's validation score slightly flattering, which the notebook states. The fair score is the test score, which validation never touched.</p>
+          <p class="where">Task 25 result</p></div></details></li>
+        <li><details><summary>Does class weighting help (DEC-027)?</summary><div class="ans">
+          <p>It does not change the ranking measurably: without weights the PR-AUC moves by −0.016 to +0.002, and every interval includes zero. But it roughly doubles the outputs: the mean predicted value on validation is 0.31–0.34 with weights against a true podium rate of 0.151 (0.14–0.15 without). So the outputs are scores, not probabilities. That is why the tuned thresholds sit above 0.5 and why Step 9 recalibrates.</p>
+          <p class="where">Task 26</p></div></details></li>
+        <li><details><summary>How are the decision thresholds chosen, and what is “top 3 per race” (DEC-028)?</summary><div class="ans">
+          <p>For each model, the threshold with the highest F1 on validation: 0.59 (logistic), 0.76 (forest), 0.75 (LightGBM), 0.74 (network). At 0.5 the F1 would be 0.60–0.64, below the grid rule. The F1 curves are flat between about 0.6 and 0.85, so the exact peak is partly chance. Top 3 per race names the three highest-scoring drivers in each race: it needs no tuning and uses the fact that every race has exactly three podium places.</p>
+          <p class="where">Task 27.1</p></div></details></li>
+        <li><details><summary>How was the final model chosen, and why not refit on train + validation (DEC-029, DEC-030)?</summary><div class="ans">
+          <p>The rule was fixed beforehand: highest validation PR-AUC among the learned models, which is LightGBM (0.743). None of the four is measurably better than logistic regression on validation (all intervals include zero). The models are not refit on train + validation, so the model described by the validation numbers is exactly the one scored on test.</p>
+          <p class="where">Tasks 27.2, 28 intro</p></div></details></li>
+        <li><details><summary>What happened on the test seasons?</summary><div class="ans">
+          <p>Test PR-AUC: grid rule 0.647, logistic regression 0.712, forest 0.707, LightGBM 0.709, network 0.720. The rule is 0.064 below logistic regression (−0.118 to −0.011). No learned model differs measurably from logistic regression. From validation to test, the tree models chosen as best of 20 or 40 configurations fall most (forest 0.028, LightGBM 0.034); logistic regression falls 0.015 and the network 0.013.</p>
+          <p class="where">Tasks 28.1–28.2</p></div></details></li>
+        <li><details><summary>Do the thresholds and the top-3 rule transfer to the test seasons?</summary><div class="ans">
+          <p>The thresholds predict too many podiums on test: 3.75 per race for LightGBM and up to 5.2 for logistic regression, against 3 real ones. Recall rises and precision falls; test F1 is 0.670–0.684 against 0.649 for the grid rule. LightGBM finds 157 podiums, misses 47 and raises 98 false alarms. Top 3 per race gets about two of the three podium places right (1.94–2.00 per race), the same as the grid rule (1.96). The models' advantage is in ranking the whole field, not in naming exactly three.</p>
+          <p class="where">Task 28.4</p></div></details></li>
+      </ol>
+    </section>
+  </div>
+
+  <!-- ===================== PERSON D ===================== -->
+  <div class="panel" role="tabpanel" id="d" aria-labelledby="tab-d" style="--pc: var(--p-d)" hidden>
+    <div class="panel-head">
+      <h2>Person D: ablation, explainability and inference</h2>
+      <p class="meta">Cells 149–206 · Steps 7–10 · Tasks 29–38 · about 620 lines of code</p>
+    </div>
+
+    <section>
+      <h3>Cells you own</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Cells</th><th>Task</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td class="c">149–152</td><td class="t">Task 29</td><td>Ablation protocol (DEC-031): feature blocks, retraining helper, 10-seed spread</td></tr>
+          <tr><td class="c">153–156</td><td class="t">Task 30</td><td>Leave one group out</td></tr>
+          <tr><td class="c">157–162</td><td class="t">Task 31</td><td>Leave one block out; each group or block alone; hand-off</td></tr>
+          <tr><td class="c">163–167</td><td class="t">Task 32</td><td>Permutation importance for features, groups and blocks (DEC-032)</td></tr>
+          <tr><td class="c">168–173</td><td class="t">Task 33</td><td>SHAP: global importance, beeswarm, dependence, three views compared</td></tr>
+          <tr><td class="c">174–177</td><td class="t">Task 34</td><td>Two surprising cases chosen by rule; SHAP waterfalls</td></tr>
+          <tr><td class="c">178–183</td><td class="t">Task 35</td><td>LIME on the same cases; agreement and stability; what explanations do not say</td></tr>
+          <tr><td class="c">184–188</td><td class="t">Task 36</td><td>Platt scaling from score to probability; reliability plot (DEC-033)</td></tr>
+          <tr><td class="c">189–192</td><td class="t">Task 37</td><td><code>pre_race_features()</code> and its consistency check</td></tr>
+          <tr><td class="c">193–200</td><td class="t">Task 38</td><td><code>predict_podium()</code>: complete record, missing qualifying, grid what-if, invalid input</td></tr>
+          <tr><td class="c">201–206</td><td class="t">Step 10</td><td>Requirement map, limitations, future work, Run Check</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section>
+      <h3>Numbers to know</h3>
+      <dl class="numbers">
+        <div><dt>Seed spread, val PR-AUC (10 seeds)</dt><dd>0.740–0.744</dd></div>
+        <div><dt>Without starting position, val / test</dt><dd>−0.085 / −0.121</dd></div>
+        <div><dt>Without past results, val / test</dt><dd>−0.064 / −0.031</dd></div>
+        <div><dt>Without context</dt><dd>≈ 0</dd></div>
+        <div><dt>Permutation drop of grid</dt><dd>0.229</dd></div>
+        <div><dt>SHAP share: grid / start-pos. block</dt><dd>40% / 54%</dd></div>
+        <div><dt>Features never used</dt><dd>4 of 21</dd></div>
+        <div><dt>SHAP base value</dt><dd>−1.092 log-odds</dd></div>
+        <div><dt>Test mean prob. vs. podium rate</dt><dd>0.161 vs. 0.151</dd></div>
+        <div><dt>Test Brier, score → calibrated</dt><dd>0.117 → 0.069</dd></div>
+        <div><dt>Threshold as a probability</dt><dd>0.747 → 0.407</dd></div>
+        <div><dt>Norris demo: score / probability</dt><dd>0.901 / 0.756</dd></div>
+      </dl>
+    </section>
+
+    <section>
+      <div class="qa-bar"><h3>Expected questions</h3><div><span class="progress"></span> <button class="btn" data-toggle-all>Show all answers</button></div></div>
+      <ol class="qa">
+        <li><details><summary>What is the ablation protocol, and why run it on LightGBM (DEC-031)?</summary><div class="ans">
+          <p>LightGBM is the selected model and takes raw features, so a group can be dropped without touching an imputer or scaler. Only the columns change: same hyperparameters, training seasons and class weights, nothing retuned. Each variant is scored on validation and test, with a race-bootstrap 95% interval on the difference and the same difference averaged over 10 seeds. Nothing is chosen from the results.</p>
+          <p class="where">Task 29</p></div></details></li>
+        <li><details><summary>Why the 10-seed check?</summary><div class="ans">
+          <p>Each tree is offered a random 70% of the features (<code>colsample_bytree = 0.7</code>). Removing columns changes that draw, so part of any difference is chance and not the removed group. The seed alone moves the full model's PR-AUC between 0.740 and 0.744 on validation and 0.707 and 0.717 on test.</p>
+          <p class="where">Task 29.1</p></div></details></li>
+        <li><details><summary>What does leaving one group out show?</summary><div class="ans">
+          <p>No single group is needed: every 95% interval includes zero on validation and test. Grid has the most consistent cost (about −0.017 on validation, −0.018 on test, −0.020 across seeds). Qualifying looks important on validation (−0.015) but helps on test (+0.014): noise. Driver form, constructor form and standings cost under 0.01; context costs nothing.</p>
+          <p class="where">Task 30</p></div></details></li>
+        <li><details><summary>So are the features useless? Why remove whole blocks?</summary><div class="ans">
+          <p>No. Leave-one-out measures what a group adds on top of all the others. Grid and qualifying both say where the car starts; driver form, constructor form and standings all say how driver and team have been doing. Remove one and the model reads the same information from its neighbour. Removing whole blocks shows the information itself: without the starting position the model loses 0.085 on validation and 0.121 on test; without past results 0.064 and 0.031; without context nothing.</p>
+          <p class="where">Tasks 30–31</p></div></details></li>
+        <li><details><summary>What do the “alone” results add?</summary><div class="ans">
+          <p>Starting position alone scores 0.670 / 0.667 (validation / test), close to the grid rule. Past results alone score 0.652 / 0.591, so they transfer worse to 2022–2024, after the ground-effect regulation change (consistent with a rule change, though two splits cannot prove it). Context alone scores 0.389 / 0.273.</p>
+          <p class="where">Task 31.2</p></div></details></li>
+        <li><details><summary>Context adds nothing. Why didn't you remove it?</summary><div class="ans">
+          <p>The model was fixed in Step 6, before the test seasons were scored. Removing context now would change the model based on test results, for no gain in score. All 21 features stay (DEC-031); a simpler model without context is listed as future work.</p>
+          <p class="where">Task 31 result · Future Work</p></div></details></li>
+        <li><details><summary>How does permutation importance work here, and what does it show?</summary><div class="ans">
+          <p>Shuffle a feature's values across the validation rows (50 times), which breaks its link to the outcome while keeping its distribution, and measure the drop in PR-AUC of the fitted model. Groups and blocks are shuffled together, with one row order for all their columns. <code>grid</code> alone costs 0.229 (0.148–0.302); no other single feature is clearly above zero. Blocks: starting position 0.390, past results 0.167, context 0. Single drops sum to 0.311, but shuffling everything costs 0.586: overlapping features cover for each other.</p>
+          <p class="where">Task 32</p></div></details></li>
+        <li><details><summary>What is a SHAP value here, and in what unit?</summary><div class="ans">
+          <p>SHAP splits one prediction into a contribution per feature. For trees it is exact: base value plus the 21 contributions equals the model's raw output (asserted). The unit is log-odds of the <em>weighted</em> score, not a probability. Base value −1.092 log-odds (score 0.251); the decision threshold 0.747 is +1.084 log-odds.</p>
+          <p class="where">Task 33.1</p></div></details></li>
+        <li><details><summary>What does SHAP show about how the model uses its features?</summary><div class="ans">
+          <ul>
+            <li><code>grid</code> carries 40% of all SHAP magnitude, then <code>constructor_rolling_points_5</code> (12%) and the two driver podium rates (8% each). The top features match permutation.</li>
+            <li>The grid effect is a staircase: slots 1–3 all about +1.6, then +1.34, +0.96, +0.67, crossing zero between slots 9 and 10; slots 11–14 about −0.4 and 15 onward about −1.0.</li>
+            <li>Four features are never used in any tree (<code>pit_start</code>, <code>missing_quali_flag</code>, <code>is_home_race</code>, <code>circuit_historical_podium_rate</code>); context has 0.9% of SHAP.</li>
+          </ul>
+          <p class="where">Tasks 33.1–33.3</p></div></details></li>
+        <li><details><summary>Why must the SHAP value of <code>q3_reached</code> not be read literally?</summary><div class="ans">
+          <p>It is negative whether or not Q3 was reached (−0.08 for 1, −0.11 for 0). Only 25.5% of training rows have a value for it at all, so the model learned “this row has a Q3 value”, a property of how the data was recorded, not the effect of reaching Q3.</p>
+          <p class="where">Task 33.3</p></div></details></li>
+        <li><details><summary>SHAP, permutation and retraining give different sizes for the same block. Which is right?</summary><div class="ans">
+          <p>All three agree on the order (starting position, then past results, then context) and answer different questions. Permutation asks what the fitted model loses when a block is scrambled: it still trusts the scrambled values, so the loss is large (0.390). Retraining asks what a new model loses without the block: it leans on what is left, so the loss is smaller (0.085). For the grid group alone: 0.279 by permutation but 0.017 by retraining, because a retrained model takes the same information from qualifying.</p>
+          <p class="where">Task 33.4</p></div></details></li>
+        <li><details><summary>How were the two local cases chosen, and what do they show?</summary><div class="ans">
+          <p>By rule, from validation rows with no missing feature: the podium finisher with the lowest score, and the pole-sitter off the podium with the highest score. Both are from the 2020 Italian GP. Gasly (AlphaTauri, grid 10, score 0.127) won: every SHAP bar points down, a midfield profile. Hamilton (Mercedes, pole, score 0.915) finished 7th: pole alone adds about +1.65. The model read its inputs correctly. The race was decided by in-race events (safety car, red flag, Hamilton's penalty) that no pre-race model can see. On validation 32 of 117 podiums score below the threshold and 9 of 38 pole-sitters missed the podium.</p>
+          <p class="where">Task 34</p></div></details></li>
+        <li><details><summary>How does LIME work here, and why does it fail on the Gasly case?</summary><div class="ans">
+          <p>LIME samples 5,000 artificial rows around the case from a background of the 4,027 training rows with no missing value (2006–2019), scores them with the model and fits a small linear model; its weights are the explanation, in score units. For Hamilton it works: R² 0.82, top feature <code>grid</code> as in SHAP, the same on all 5 seeds. For Gasly it fails: R² 0.05, its top feature is <code>pit_start</code>, which no tree uses (SHAP 0), and the top feature changes across seeds. <code>pit_start = 1</code> is in only 7 background rows, so noise looks like an effect. SHAP is the method to rely on; LIME is a second opinion, quoted only with its R².</p>
+          <p class="where">Task 35</p></div></details></li>
+        <li><details><summary>What must not be concluded from the explanations?</summary><div class="ans">
+          <ul>
+            <li>Importance is not causation: <code>grid</code> summarises car, driver and setup speed that weekend; putting a slow car on pole would not make it a contender.</li>
+            <li>Credit between near-duplicates (<code>grid</code> vs. <code>quali_position</code>, ρ = 0.98) is arbitrary; quote importance per block.</li>
+            <li>They describe this weighted model on 2020–2021, not other seasons, and its scores are not probabilities.</li>
+          </ul>
+          <p class="where">Cell 182 · DEC-032</p></div></details></li>
+        <li><details><summary>Why calibrate, how, and on which data (DEC-033)?</summary><div class="ans">
+          <p>Class weights push the raw score up (mean 0.32 against a podium rate of 0.15), so 0.5 would wrongly read as “a 50% chance”. Platt scaling fits a one-input logistic regression from the model's log-odds to the outcome, on validation only: probability = sigmoid(1.348 × log-odds − 1.838). Two parameters, so 775 rows suffice. It is monotone, so the ranking, PR-AUC and every yes/no prediction stay the same. On test (check only): mean probability 0.161 vs. podium rate 0.151; Brier 0.117 → 0.069; top bin 0.70 predicted vs. 0.70 observed.</p>
+          <p class="where">Task 36</p></div></details></li>
+        <li><details><summary>The function says “podium” at a probability of 0.41. Why not 0.5?</summary><div class="ans">
+          <p>The decision threshold is still the F1-optimal score from validation (0.747), which maps to a calibrated probability of 0.407. It is the point where F1 was highest, not a “more likely than not” rule. On test it predicts about 3.75 podiums per race against 3 real ones.</p>
+          <p class="where">Task 36.1 · DEC-028</p></div></details></li>
+        <li><details><summary>How does <code>pre_race_features()</code> avoid leaking the race it predicts?</summary><div class="ans">
+          <p>It does not look up a row in <code>model_df</code>. It calls the same <code>build_feature_table()</code> as training on every race strictly before this one, plus this race's entry list with finishing order, points and podium set to missing. The grid and qualifying passed in replace the recorded ones. Check: 36 validation and test rows (including 7 pit-lane starts and 1 without qualifying) are rebuilt with identical features and identical scores.</p>
+          <p class="where">Task 37</p></div></details></li>
+        <li><details><summary>How does <code>predict_podium()</code> handle missing qualifying, a pit-lane start, an unknown driver and bad input?</summary><div class="ans">
+          <ul>
+            <li><code>quali_info=None</code> leaves the qualifying features missing; LightGBM routes them down its learned missing-value branch (seen in about 14,000 training rows). Norris at Abu Dhabi 2024: 0.756 with full qualifying, 0.688 with position only, 0.664 with none. Over the 2024 season, removing qualifying moves PR-AUC 0.694 → 0.692 and flips 8 of 476 predictions.</li>
+            <li><code>grid = 0</code> is recoded as in cleaning: one slot behind the last car, <code>pit_start = 1</code>.</li>
+            <li>A driver not in the entry list is added in the team of their last race (Ocon at slot 10: 0.049).</li>
+            <li>Unknown race or driver, a non-integer grid, or an unknown qualifying key raise a <code>ValueError</code> with a message.</li>
+          </ul>
+          <p class="where">Task 38</p></div></details></li>
+        <li><details><summary>The grid what-if rises again at slots 19–20. What does that mean?</summary><div class="ans">
+          <p>For Norris with no qualifying data, the probability falls from 0.66 (slots 1–2) to 0.45 at slot 5 (the last predicted podium) and 0.10 at slots 15–18, then rises to 0.15 at 19, 20 and the pit lane. The training data does not support that: strong teams' cars from slot 19 or further back reached the podium in 4.2% of 288 cases, against 6.5% from slots 13–16. Such cars are rare, so the model's output there should not be trusted. It is also a what-if on the model, not the race: only this driver's slot changes.</p>
+          <p class="where">Task 38.4</p></div></details></li>
+        <li><details><summary>What does the Run Check do?</summary><div class="ans">
+          <p>It compares 25 headline numbers quoted in the text and report with the current run and never raises, so it cannot break Run All. Counts differing means a different dataset version; scores differing with matching counts means a library behaves differently (most likely the network). Right now it flags 16 of 25: the text still needs updating.</p>
+          <p class="where">Cells 205–206</p></div></details></li>
+        <li><details><summary>Name the main limitations and the most useful future work.</summary><div class="ans">
+          <ul>
+            <li>Data: qualifying thin before 2003; training eras unlike the test seasons; renamed teams restart their form history.</li>
+            <li>Evaluation: small validation and test sets; tuning flattered the tree models; thresholds over-predict on test; test seasons have now been used several times.</li>
+            <li>Model: mostly a grid model; in-race events set a ceiling; four unused features; unreliable outputs for rare inputs.</li>
+            <li>Future: team lineage in features, drop context, rank within a race, practice pace and weather, rolling-origin validation, re-evaluate on seasons after 2024.</li>
+          </ul>
+          <p class="where">Cells 203–204</p></div></details></li>
+      </ol>
+    </section>
+  </div>
+
+  <footer>Built from <code>formula-1.ipynb</code> and <code>docs/decision_log.md</code>. Cell numbers count from 1 in notebook order, markdown cells included. Your “know it” ticks stay in this browser only.</footer>
+</div>
+
+<script>
+(function () {
+  var KEY_TAB = "f1-study-tab", KEY_KNOWN = "f1-study-known";
+  var tabs = Array.prototype.slice.call(document.querySelectorAll(".tab"));
+  var panels = Array.prototype.slice.call(document.querySelectorAll(".panel"));
+  function store(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+
+  var known = {};
+  try { known = JSON.parse(load(KEY_KNOWN) || "{}") || {}; } catch (e) { known = {}; }
+
+  function show(id) {
+    if (!document.getElementById(id)) id = "all";
+    tabs.forEach(function (t) { t.setAttribute("aria-selected", String(t.dataset.tab === id)); t.tabIndex = t.dataset.tab === id ? 0 : -1; });
+    panels.forEach(function (p) { p.hidden = p.id !== id; });
+    store(KEY_TAB, id);
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener("click", function () { show(t.dataset.tab); history.replaceState(null, "", "#" + t.dataset.tab); });
+    t.addEventListener("keydown", function (e) {
+      var d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+      if (!d) return;
+      var next = tabs[(i + d + tabs.length) % tabs.length];
+      next.focus(); next.click();
+    });
+  });
+
+  panels.forEach(function (panel) {
+    var items = Array.prototype.slice.call(panel.querySelectorAll("ol.qa > li"));
+    var progress = panel.querySelector(".progress");
+    function count() {
+      var n = items.filter(function (li) { return li.classList.contains("known"); }).length;
+      if (progress) progress.innerHTML = "<b>" + n + "</b> of " + items.length + " known";
+    }
+    items.forEach(function (li, i) {
+      var id = panel.id + "-" + (i + 1);
+      var label = document.createElement("label");
+      label.className = "know";
+      label.innerHTML = '<input type="checkbox" id="know-' + id + '"> Know it';
+      li.appendChild(label);
+      var box = label.querySelector("input");
+      box.checked = !!known[id];
+      li.classList.toggle("known", box.checked);
+      box.addEventListener("change", function () {
+        if (box.checked) known[id] = 1; else delete known[id];
+        li.classList.toggle("known", box.checked);
+        store(KEY_KNOWN, JSON.stringify(known));
+        count();
+      });
+    });
+    count();
+    var btn = panel.querySelector("[data-toggle-all]");
+    if (btn) btn.addEventListener("click", function () {
+      var open = btn.textContent.indexOf("Show") === 0;
+      panel.querySelectorAll("ol.qa details").forEach(function (d) { d.open = open; });
+      btn.textContent = open ? "Hide all answers" : "Show all answers";
+    });
+  });
+
+  var start = (location.hash || "").replace("#", "") || load(KEY_TAB) || "all";
+  show(start);
+})();
+</script>

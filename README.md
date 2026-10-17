@@ -25,7 +25,7 @@ The whole pipeline is in one notebook, [formula-1.ipynb](formula-1.ipynb): data 
 | [formula-1.ipynb](formula-1.ipynb) | The notebook, 11 sections, Tasks 1–38 |
 | [archive/](archive/) | The 14 raw CSV tables (Ergast data, 1950–2024). Never modified. |
 | [figures/](figures/) | Every figure the notebook saves, at 300 DPI |
-| [report/](report/) | The analytical report: source, build script and PDF |
+| [report/](report/) | The analytical report. `report.md` is the text; `md_to_latex.py` turns it into `report.tex` for submission (compile on Overleaf with the `figures/` folder uploaded beside it, or locally from `report/`), as the brief requires a Word or LaTeX report exported to PDF |
 | [docs/notebook_guide.md](docs/notebook_guide.md) | Walk-through of every task and figure |
 | [docs/decision_log.md](docs/decision_log.md) | Every judgment call, with its evidence (DEC-001 to DEC-033) |
 | [docs/status_and_next_steps.md](docs/status_and_next_steps.md), [docs/project_status.pdf](docs/project_status.pdf) | Current status and open items |

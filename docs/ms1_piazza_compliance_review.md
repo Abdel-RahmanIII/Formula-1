@@ -4,7 +4,30 @@
 
 **Method.** Each Piazza ruling was compared with the code and outputs of the matching task. Where a decision depends on the data, it was re-checked against the raw CSVs in `archive/`. The counts quoted below come from that check (2026-10-16), not from the notebook text.
 
-**Scope.** Cell numbers are 0-based indices in the notebook as committed at `e3becf9`. Task numbers match the notebook headings.
+**Scope.** Cell numbers are 0-based indices in the notebook as committed at `e3becf9`. Task numbers match the notebook headings. Cells were added after that commit, so later cell indices have shifted; the Task numbers still apply.
+
+---
+
+## 0. Status (updated 2026-10-16)
+
+| # | Status | What was done | Where |
+| :-- | :--- | :--- | :--- |
+| F1 | ✅ Fixed | `Puncture`, `Tyre`, `Tyre puncture` moved to mechanical; the instructors' list is asserted. 2014–2021 mechanical rate 9.43% → 9.77%; top three per era unchanged | Task 11, DEC-036 |
+| F2 | ✅ Fixed | Q1 by grid only, every season (1950–2013 vs. 2014–2024), with a 2003–2013 sensitivity check. Ranking not preserved (ρ = −0.08; 0.36 on the shorter window) | Task 9, DEC-035 |
+| F3 | ✅ Fixed (refined) | A shared car is identified by `(raceId, constructorId, grid, positionOrder)`; every row of a car listed under two drivers is removed (157 rows), and a driver who also drove a car of their own keeps that row. This resolves edge case 5 (single-row partners) and keeps 43 attributable entries that the "drop all duplicate groups" rule would have lost. Same slot with a different classification is a data-entry collision (29 rows) and is kept. `field_size` is counted before the removal | Task 6, DEC-034 |
+| F4 | ✅ Fixed | Retraining with withdrawn entries kept makes LightGBM worse on validation (Δ −0.013, interval below zero; 10-seed −0.007) and changes nothing elsewhere. The removal stands on evidence. The decision rule was made one-sided before the cell was added (see DEC-038) | Task 31b, DEC-038, DEC-009 |
+| F5 | ✅ Fixed | Retraining with the Indianapolis 500 kept (own circuit id) changes nothing (every Δ within ±0.001). The exclusion stands on evidence | Task 31b, DEC-038, DEC-003 |
+| F6 | ✅ Fixed | Sprint leakage judgement with checks: sprints dated before their Grand Prix (asserted); 2021–22 sprint already in `grid`; leakage routes and their guards listed. Exclusion is a coverage decision | Task 12.7a, DEC-039 |
+| F7 | ⏳ Open | Report text updated for every fix; the source is still Markdown. Needs porting to Word or LaTeX, or TA confirmation | `report/report.md` |
+| F8 | ✅ Covered | The 15 `E`/`D`/`R` rows are part of the non-starter rule tested in Task 31b; no further change | Task 31b |
+| F9 | ✅ Framing fixed | Task 24 now states that native missing-value handling was chosen because the experiment shows no loss against imputation, citing Piazza. The optional imputation edge cases are not changed | Task 24 |
+| F10 | ⏳ Open (low) | Renamed constructors: not changed; listed under limitations and future work | — |
+
+**Found during the fixes**
+
+- **Single-seed tuning was unstable (DEC-037).** After F3, all three random searches picked different winners within noise, and the LightGBM winner (31 leaves, 50% of features per tree) cut `grid`'s SHAP share from 41% to 26% by spreading credit to `quali_position`. A controlled check (old vs. new data × old vs. new configuration, 5 seeds) showed the data change had no effect and the new configuration averaged 0.732 against 0.742. Every search now ranks configurations by their mean over five seeds; this picks the original settings again.
+- **Task 25 text vs. committed outputs.** The text was right; the committed outputs were stale. A fresh run of the unmodified notebook reproduced all 25 headline numbers.
+- **Task 32.2 error bars** could go negative when a feature's shuffles are skewed; they are now clipped at zero.
 
 ---
 
