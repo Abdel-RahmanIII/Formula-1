@@ -4,7 +4,7 @@
 
 <div class="meta">
 <b>Team:</b> Kevin Sherif (58-0484), Zeyad Sameh (58-3364), Marina Medhat (58-5270), Abdelrahman Mahmoud (58-2414)<br>
-<b>Notebook (Kaggle):</b> KAGGLE NOTEBOOK LINK<br>
+<b>Notebook (Kaggle):</b> https://www.kaggle.com/code/kevinezzat/formula-1-team-20/<br>
 <b>Repository:</b> https://github.com/Abdel-RahmanIII/Formula-1<br>
 <b>Date:</b> 18 October 2026
 </div>
